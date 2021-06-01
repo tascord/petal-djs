@@ -1,12 +1,10 @@
-import { Client, Intents, Interaction, Message, MessageActionRow, MessageEmbed } from "discord.js";
+import { Client, Intents, Message, MessageActionRow, MessageEmbed } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { table } from "quick.db";
 import { join } from "path";
 import { PetalCommand, PetalEvent } from "..";
 import PetalInteractionManager from "./PetalInteractionManager";
-
-import Storage from "./PetalStorage";
-const { Store, get_database } = Storage;
+import { Store, get_database } from "./PetalStorage";
 
 type PetalOps = {
     module_location?: string,
@@ -89,7 +87,7 @@ export default class Petal {
             if (name === 'interaction') throw new Error(`The interaction event is reserved by petal.`);
 
             // Runs the event with the current petal instance prepended in the arguments
-            this.client.on(name, (...args) => {
+            this.client.on(name, (...args: any) => {
                 (event as PetalEvent).run(this, ...args);
             });
 
@@ -231,7 +229,7 @@ export default class Petal {
                     let user_id = (/[0-9]{18}/.exec(given_arguments[i]) || [])[0];
                     if (!user_id) return error(i);
 
-                    let user = message.mentions.members.find(u => u.id == user_id);
+                    let user = message.mentions.members.find((u: any) => u.id == user_id);
                     if (!user) return error(i);
 
                     formatted_args.push(user);
@@ -243,7 +241,7 @@ export default class Petal {
                     let channel_id = (/[0-9]{18}/.exec(given_arguments[i]) || [])[0];
                     if (!channel_id) return error(i);
 
-                    let channel = message.mentions.channels.find(u => u.id == channel_id);
+                    let channel = message.mentions.channels.find((u: any) => u.id == channel_id);
                     if (!channel) return error(i);
 
                     formatted_args.push(channel);

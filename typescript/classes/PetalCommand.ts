@@ -1,8 +1,6 @@
 import { Message, MessageActionRow, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
-
-import Storage from "./PetalStorage";
-const { Store } = Storage;
+import { Store } from "./PetalStorage";
 
 type PetalCommandOpts = {
 

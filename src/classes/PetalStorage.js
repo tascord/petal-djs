@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Store = exports.get_database = void 0;
 var path_1 = require("path");
 var quick = require('quick.db');
 /**
@@ -13,6 +14,7 @@ var get_database = function (table_name, database_location) {
     var base = quick(database_location);
     return new base.table(table_name);
 };
+exports.get_database = get_database;
 var Store = /** @class */ (function () {
     /**
      * PetalStorage constructor
@@ -54,8 +56,5 @@ var Store = /** @class */ (function () {
     };
     return Store;
 }());
-exports.default = {
-    get_database: get_database,
-    Store: Store
-};
+exports.Store = Store;
 //# sourceMappingURL=PetalStorage.js.map

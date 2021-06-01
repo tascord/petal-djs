@@ -1,6 +1,6 @@
 {
   "name": "djs-petal",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Petal — A discord.js framework!",
   "main": "src/index.js",
   "directories": {
@@ -14,6 +14,7 @@
   "author": "tascord",
   "license": "ISC",
   "dependencies": {
+    "discord-api-types": "^0.18.1",
     "discord.js": "github:monbrey/discord.js#message-components",
     "quick.db": "github:lorencerri/quick.db"
   },

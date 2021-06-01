@@ -40,8 +40,7 @@ var fs_1 = require("fs");
 var path_1 = require("path");
 var __1 = require("..");
 var PetalInteractionManager_1 = __importDefault(require("./PetalInteractionManager"));
-var PetalStorage_1 = __importDefault(require("./PetalStorage"));
-var Store = PetalStorage_1.default.Store, get_database = PetalStorage_1.default.get_database;
+var PetalStorage_1 = require("./PetalStorage");
 var Petal = /** @class */ (function () {
     /**
      * Petal client constructor
@@ -91,7 +90,7 @@ var Petal = /** @class */ (function () {
             var formatted_args = _this.format_args(args, message, run);
             if (formatted_args instanceof discord_js_1.MessageEmbed)
                 return message.reply(formatted_args);
-            run.run(_this, formatted_args, message, new Store(_this.users, message.author.id), new Store(_this.servers, message.guild.id))
+            run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
                 // Null response
                 if (!response)
@@ -259,8 +258,8 @@ var Petal = /** @class */ (function () {
         this.client.on('interaction', this.interaction_manager.handle_interaction);
         // Data stores
         this.database_location = opts.database_location;
-        this.users = get_database('users', this.database_location);
-        this.servers = get_database('servers', this.database_location);
+        this.users = PetalStorage_1.get_database('users', this.database_location);
+        this.servers = PetalStorage_1.get_database('servers', this.database_location);
         // Login client
         this.client.login(opts.token);
     }

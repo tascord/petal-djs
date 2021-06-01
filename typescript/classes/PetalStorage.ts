@@ -8,14 +8,14 @@ const quick = require('quick.db');
  * @param database_location Database location
  * @returns 
  */
-const get_database = (table_name: string, database_location: string = join('./', 'petal.sqlite')): table => {
+export const get_database = (table_name: string, database_location: string = join('./', 'petal.sqlite')): table => {
 
     const base = quick(database_location);
     return new base.table(table_name);
 
 }
 
-class Store {
+export class Store {
 
     database: table;
     id: string;
@@ -69,9 +69,4 @@ class Store {
     }
 
 
-}
-
-export default {
-    get_database,
-    Store
 }

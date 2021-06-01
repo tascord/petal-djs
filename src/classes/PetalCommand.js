@@ -1,10 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var PetalStorage_1 = __importDefault(require("./PetalStorage"));
-var Store = PetalStorage_1.default.Store;
 var PetalCommand = /** @class */ (function () {
     /**
      * Petal command constructor
