@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "github:monbrey/discord.js#message-components",
-    "quick.db": "github:lorencerri/quick.db",
+    "quick.db": "github:lorencerri/quick.db"
   },
   "devDependencies": {
     "@types/node": "^15.6.1",
