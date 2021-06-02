@@ -13,6 +13,7 @@ const test = new PetalCommand({
     ]
 })
 
+
 /**
  * Example petal command
  * @param {Petal} petal Petal instance 
@@ -71,6 +72,7 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
                     new PetalButton()
                         .setLabel('Delete message')
                         .setStyle('red')
+                        .setIndividual(message.author)
                         .setHandler(petal, delete_handler)
                         .compile()
                 )

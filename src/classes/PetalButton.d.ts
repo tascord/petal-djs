@@ -1,4 +1,4 @@
-import { MessageButton } from "discord.js";
+import { GuildMember, MessageButton, User } from "discord.js";
 import { Petal } from "..";
 export default class PetalButton {
     private raw;
@@ -37,6 +37,12 @@ export default class PetalButton {
      * @returns
      */
     setHandler: (client: Petal, handler: Function) => PetalButton;
+    /**
+     * Sets whether or not anyone can use the button or only the user who ran the command
+     * @param individual Button individuality
+     * @returns
+     */
+    setIndividual: (individual: User | GuildMember) => PetalButton;
     /**
      * Gets the buttons raw data
      * @returns

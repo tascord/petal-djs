@@ -63,7 +63,18 @@ var PetalButton = /** @class */ (function () {
         this.setHandler = function (client, handler) {
             if (_this.raw.custom_id)
                 throw new TypeError("Handler already declared, custom_id present.");
-            _this.raw.custom_id = client.interaction_manager.add_interaction(handler);
+            _this.raw.custom_id = client.interaction_manager.register_interaction(handler, _this.raw.individual || null);
+            return _this;
+        };
+        /**
+         * Sets whether or not anyone can use the button or only the user who ran the command
+         * @param individual Button individuality
+         * @returns
+         */
+        this.setIndividual = function (individual) {
+            if (_this.raw.custom_id)
+                throw new TypeError("Cannot set individuality after handler is set.");
+            _this.raw.individual = individual.id;
             return _this;
         };
         /**

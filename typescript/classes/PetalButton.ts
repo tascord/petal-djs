@@ -1,4 +1,4 @@
-import { MessageButton } from "discord.js";
+import { GuildMember, MessageButton, User } from "discord.js";
 import { Petal } from "..";
 import constants from "../constants";
 
@@ -9,7 +9,8 @@ type PetalRawButton = {
     url?: string,
     emoji?: string | null,
     label?: string | null,
-    custom_id?: string
+    custom_id?: string,
+    individual?: string,
 }
 
 export default class PetalButton {
@@ -79,7 +80,18 @@ export default class PetalButton {
      */
     setHandler = (client: Petal, handler: Function): PetalButton => {
         if (this.raw.custom_id) throw new TypeError(`Handler already declared, custom_id present.`);
-        this.raw.custom_id = client.interaction_manager.add_interaction(handler);
+        this.raw.custom_id = client.interaction_manager.register_interaction(handler, this.raw.individual || null);
+        return this;
+    }
+    
+    /**
+     * Sets whether or not anyone can use the button or only the user who ran the command
+     * @param individual Button individuality
+     * @returns 
+     */
+    setIndividual = (individual: User|GuildMember): PetalButton => {
+        if(this.raw.custom_id) throw new TypeError(`Cannot set individuality after handler is set.`);
+        this.raw.individual = individual.id;
         return this;
     }
 
@@ -110,7 +122,5 @@ export default class PetalButton {
         return button;
 
     };
-
-    /**  */
 
 }
