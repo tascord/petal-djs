@@ -94,7 +94,8 @@ var PetalButton = /** @class */ (function () {
                 button.setCustomID(_this.raw.custom_id);
             button.setStyle(_this.raw.style);
             button.setDisabled(_this.raw.disabled);
-            button.setEmoji(_this.raw.emoji);
+            if (_this.raw.emoji)
+                button.setEmoji(_this.raw.emoji);
             return button;
         };
         this.raw = {

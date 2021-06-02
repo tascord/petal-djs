@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction } = require('discord.js');
-const { PetalCommand, PetalButton, Petal, PetalStorage } = require('../../../src')
-const { Store } = PetalStorage;
+const { PetalCommand, PetalButton, Petal } = require('../../../src');
+const { Store } = require('../../../src/classes/PetalStorage');
 
 const test = new PetalCommand({
     arguments: [
@@ -44,7 +44,7 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
      * @param {Interaction} interaction Interaction data
      */
     const delete_handler = (interaction) => {
-        console.log(interaction.message.delete());
+        interaction.message.delete();
     }
 
     // Resolving in [Embed, ActionRow[]] mixed format.
@@ -70,7 +70,6 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
                 .addComponents(
                     new PetalButton()
                         .setLabel('Delete message')
-                        .setEmoji('♻️')
                         .setStyle('red')
                         .setHandler(petal, delete_handler)
                         .compile()

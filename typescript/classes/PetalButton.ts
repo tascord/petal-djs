@@ -105,7 +105,7 @@ export default class PetalButton {
 
         button.setStyle(this.raw.style);
         button.setDisabled(this.raw.disabled);
-        button.setEmoji(this.raw.emoji as string);
+        if(this.raw.emoji) button.setEmoji(this.raw.emoji as string);
 
         return button;
 

@@ -4,7 +4,8 @@ import { table } from "quick.db";
 import { join } from "path";
 import { PetalCommand, PetalEvent } from "..";
 import PetalInteractionManager from "./PetalInteractionManager";
-import { Store, get_database } from "./PetalStorage";
+import { get_database, Store } from "./PetalStorage";
+
 
 type PetalOps = {
     module_location?: string,
