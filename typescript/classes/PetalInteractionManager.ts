@@ -1,8 +1,15 @@
 import { Interaction } from "discord.js";
 
+type PetalInteractionData = {
+    handler: Function,
+    linked_user: string | null,
+    single: boolean,
+    custom_id: string
+}
+
 export default class PetalInteractionManager {
     
-    interactions: {};
+    interactions: { string: PetalInteractionData } | {};
 
     /**
      * InteractionManager constructor
@@ -33,12 +40,13 @@ export default class PetalInteractionManager {
      * @param custom_id 
      * @returns 
      */
-    register_interaction = (handler: Function, linked_user: string | null, custom_id?: string): string => {
+    register_interaction = (handler: Function, linked_user: string | null, single: boolean, custom_id?: string): string => {
         
         let id = custom_id || this.generate_token();
         (this.interactions as any) [id] = {
             handler,
             linked_user,
+            single: single,
             registered: Date.now()
         }
 
@@ -46,6 +54,10 @@ export default class PetalInteractionManager {
 
     }
 
+    /**
+     * Handles an interaction
+     * @param interaction Interaction data
+     */
     handle_interaction = (interaction: Interaction): void => {
 
         if(!(interaction as any).customID) {
@@ -56,14 +68,20 @@ export default class PetalInteractionManager {
 
         };
         
-        let data = (this.interactions as any) [(interaction as any).customID];
-        if(!data) return;
+        let data = ((this.interactions as any) [(interaction as any).customID] as PetalInteractionData |null);
 
+        if(!data) return (interaction as any).deferUpdate();
         if(data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
+
         data.handler(interaction);
+        if(data.single) delete (this.interactions as any) [(interaction as any).customID];
 
     }
 
+    /**
+     * Generates an unused token (custom_id)
+     * @returns Unused token
+     */
     generate_token = (): string => {
 
         let token: string;

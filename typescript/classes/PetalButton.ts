@@ -11,6 +11,7 @@ type PetalRawButton = {
     label?: string | null,
     custom_id?: string,
     individual?: string,
+    single?: boolean
 }
 
 export default class PetalButton {
@@ -80,7 +81,18 @@ export default class PetalButton {
      */
     setHandler = (client: Petal, handler: Function): PetalButton => {
         if (this.raw.custom_id) throw new TypeError(`Handler already declared, custom_id present.`);
-        this.raw.custom_id = client.interaction_manager.register_interaction(handler, this.raw.individual || null);
+        this.raw.custom_id = client.interaction_manager.register_interaction(handler, this.raw.individual || null, this.raw.single || false);
+        return this;
+    }
+
+    /**
+     * Sets whether the button will cease functionality after initial interaction
+     * @param single Button singularity
+     * @returns 
+     */
+    setSingle = (single: boolean): PetalButton => {
+        if(this.raw.custom_id) throw new TypeError(`Cannot set singularity after handler is set.`);
+        this.raw.single = single;
         return this;
     }
     

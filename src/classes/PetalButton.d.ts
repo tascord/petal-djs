@@ -38,6 +38,12 @@ export default class PetalButton {
      */
     setHandler: (client: Petal, handler: Function) => PetalButton;
     /**
+     * Sets whether the button will cease functionality after initial interaction
+     * @param single Button singularity
+     * @returns
+     */
+    setSingle: (single: boolean) => PetalButton;
+    /**
      * Sets whether or not anyone can use the button or only the user who ran the command
      * @param individual Button individuality
      * @returns

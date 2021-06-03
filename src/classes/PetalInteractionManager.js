@@ -39,15 +39,20 @@ var PetalInteractionManager = /** @class */ (function () {
          * @param custom_id
          * @returns
          */
-        this.register_interaction = function (handler, linked_user, custom_id) {
+        this.register_interaction = function (handler, linked_user, single, custom_id) {
             var id = custom_id || _this.generate_token();
             _this.interactions[id] = {
                 handler: handler,
                 linked_user: linked_user,
+                single: single,
                 registered: Date.now()
             };
             return id;
         };
+        /**
+         * Handles an interaction
+         * @param interaction Interaction data
+         */
         this.handle_interaction = function (interaction) {
             if (!interaction.customID) {
                 // Handle action if un-registered
@@ -58,11 +63,17 @@ var PetalInteractionManager = /** @class */ (function () {
             ;
             var data = _this.interactions[interaction.customID];
             if (!data)
-                return;
+                return interaction.deferUpdate();
             if (data.linked_user ? data.linked_user != interaction.user.id : false)
                 return interaction.deferUpdate();
             data.handler(interaction);
+            if (data.single)
+                delete _this.interactions[interaction.customID];
         };
+        /**
+         * Generates an unused token (custom_id)
+         * @returns Unused token
+         */
         this.generate_token = function () {
             var token;
             do {

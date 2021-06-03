@@ -63,7 +63,18 @@ var PetalButton = /** @class */ (function () {
         this.setHandler = function (client, handler) {
             if (_this.raw.custom_id)
                 throw new TypeError("Handler already declared, custom_id present.");
-            _this.raw.custom_id = client.interaction_manager.register_interaction(handler, _this.raw.individual || null);
+            _this.raw.custom_id = client.interaction_manager.register_interaction(handler, _this.raw.individual || null, _this.raw.single || false);
+            return _this;
+        };
+        /**
+         * Sets whether the button will cease functionality after initial interaction
+         * @param single Button singularity
+         * @returns
+         */
+        this.setSingle = function (single) {
+            if (_this.raw.custom_id)
+                throw new TypeError("Cannot set singularity after handler is set.");
+            _this.raw.single = single;
             return _this;
         };
         /**

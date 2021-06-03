@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction } = require('discord.js');
+const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction, MessageComponentInteraction } = require('discord.js');
 const { PetalCommand, PetalButton, Petal } = require('../../../src');
 const { Store } = require('../../../src/classes/PetalStorage');
 
@@ -74,6 +74,19 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
                         .setStyle('red')
                         .setIndividual(message.author)
                         .setHandler(petal, delete_handler)
+                        .compile()
+                )
+                .addComponents(
+                    new PetalButton()
+                        .setStyle('green')
+                        .setIndividual(message.author)
+                        .setSingle(true)
+                        .setLabel('Click me!')
+                        .setHandler(petal, (interaction) => {
+                            interaction.reply('Try click that button again! Nothing should happen!', {
+                                ephemeral: true,
+                            });
+                        })
                         .compile()
                 )
         ]
