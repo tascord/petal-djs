@@ -92,12 +92,17 @@ var Petal = /** @class */ (function () {
                 return message.reply(formatted_args);
             run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
+                var enqueue_delete = function (sent_message) {
+                    if (sent_message.deletable && run.delete)
+                        setTimeout(function () { return sent_message.delete(); }, 20 * 1000);
+                };
                 // Null response
                 if (!response)
                     return;
                 // MessageEmbed response
                 if (response instanceof discord_js_1.MessageEmbed)
-                    return message.reply(response);
+                    return message.reply(response)
+                        .then(enqueue_delete);
                 // Mixed response
                 else {
                     // Convert type
@@ -116,7 +121,8 @@ var Petal = /** @class */ (function () {
                     message.reply('', {
                         components: action_rows,
                         embed: embed
-                    });
+                    })
+                        .then(enqueue_delete);
                 }
             })
                 .catch(console.error);

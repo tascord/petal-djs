@@ -8,6 +8,7 @@ declare type PetalCommandOpts = {
     arguments?: PetalCommandArguments[];
     runas?: PetalCommandRunas[];
     alias?: string[];
+    delete?: boolean;
 };
 declare type PetalCommandArguments = {
     name: string;
@@ -29,10 +30,11 @@ export default class PetalCommand {
     arguments: PetalCommandArguments[];
     runas: PetalCommandRunas[];
     alias: string[];
+    delete: boolean;
     /**
      * Petal command constructor
      * @param opts Petal command data
-     * @example new PetalCommand({  })
+     * @example new PetalCommand({ })
      */
     constructor(opts: PetalCommandOpts);
     /**

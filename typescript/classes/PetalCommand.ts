@@ -9,7 +9,8 @@ type PetalCommandOpts = {
     group?: string,
     arguments?: PetalCommandArguments[],
     runas?: PetalCommandRunas[],
-    alias?: string[]
+    alias?: string[],
+    delete?: boolean,
 
 }
 
@@ -41,11 +42,12 @@ export default class PetalCommand {
     arguments: PetalCommandArguments[];
     runas: PetalCommandRunas[];
     alias: string[];
+    delete: boolean;
 
     /**
      * Petal command constructor
      * @param opts Petal command data
-     * @example new PetalCommand({  })
+     * @example new PetalCommand({ })
      */
     constructor(opts: PetalCommandOpts) {
 
@@ -57,6 +59,7 @@ export default class PetalCommand {
         this.arguments = opts.arguments || [];
         this.runas = opts.runas || [];
         this.alias = opts.alias || [];
+        this.delete = opts.delete || true;
 
     }
 

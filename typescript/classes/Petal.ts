@@ -156,11 +156,16 @@ export default class Petal {
 
             .then((response: MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null) => {
 
+                const enqueue_delete = (sent_message: Message) => {
+                    if (sent_message.deletable && (run as PetalCommand).delete) setTimeout(() => sent_message.delete(), 20 * 1000);
+                }
+
                 // Null response
                 if (!response) return;
 
                 // MessageEmbed response
-                if (response instanceof MessageEmbed) return message.reply(response);
+                if (response instanceof MessageEmbed) return message.reply(response)
+                    .then(enqueue_delete);
 
                 // Mixed response
                 else {
@@ -183,6 +188,8 @@ export default class Petal {
                         components: action_rows,
                         embed: embed
                     })
+
+                        .then(enqueue_delete);
 
                 }
 
