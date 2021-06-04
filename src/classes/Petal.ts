@@ -41,7 +41,7 @@ export default class Petal {
 
         // Create client
         this.client = new Client({
-            intents: (opts.privileged_intents || false) ? Intents.NON_PRIVILEGED : Intents.ALL
+            intents: (opts.privileged_intents || false) ? Intents.ALL : Intents.NON_PRIVILEGED
         })
 
         // Get absolute location

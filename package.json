@@ -2,13 +2,14 @@
   "name": "djs-petal",
   "version": "1.3.0",
   "description": "Petal — A discord.js framework!",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "node test/petal",
-    "develop": "tsc-watch --project . --onSuccess \"nodemon test/petal.js\""
+    "develop": "tsc-watch --project . --onSuccess \"nodemon test/petal.js\"",
+    "docs": " --out docs"
   },
   "keywords": [],
   "author": "tascord",

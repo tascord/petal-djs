@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction, MessageComponentInteraction } = require('discord.js');
-const { PetalCommand, PetalButton, Petal } = require('../../../src');
-const { Store } = require('../../../src/classes/PetalStorage');
+const { PetalCommand, PetalButton, Petal } = require('../../../dist');
+const { Store } = require('../../../dist/classes/PetalStorage');
 
 const test = new PetalCommand({
     arguments: [

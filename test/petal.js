@@ -1,4 +1,4 @@
-const { Petal } = require('../src');
+const { Petal } = require('../dist');
 
 new Petal({
     token: 'your token here!',

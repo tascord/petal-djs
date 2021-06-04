@@ -1,4 +1,4 @@
-const { PetalEvent } = require('../../../src');
+const { PetalEvent } = require('../../../dist');
 
 const ready = new PetalEvent();
 ready.run = (petal) => {
