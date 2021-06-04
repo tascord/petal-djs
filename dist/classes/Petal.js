@@ -192,7 +192,7 @@ var Petal = /** @class */ (function () {
             throw new TypeError('Missing opts.');
         // Create client
         this.client = new discord_js_1.Client({
-            intents: (opts.privileged_intents || false) ? discord_js_1.Intents.NON_PRIVILEGED : discord_js_1.Intents.ALL
+            intents: (opts.privileged_intents || false) ? discord_js_1.Intents.ALL : discord_js_1.Intents.NON_PRIVILEGED
         });
         // Get absolute location
         this.absolute_module_location = opts.module_location;
