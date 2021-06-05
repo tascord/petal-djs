@@ -13,7 +13,10 @@ var PetalButton = /** @class */ (function () {
         var _this = this;
         /**
          * Sets the style of the button
+         * * The style of link buttons is always grey
          * @param style Buttons style
+         * @example <PetalButton>.setStyle('green');
+         * @returns
          */
         this.setStyle = function (style) {
             _this.raw.style = style == 'blurple' ? 1 : style == 'grey' ? 2 : style == 'green' ? 3 : 4;
@@ -22,6 +25,8 @@ var PetalButton = /** @class */ (function () {
         /**
          * Sets the label of the button
          * @param label Buttons label
+         * @example <PetalButton>.setLabel('Petal buttons!');
+         * @returns
          */
         this.setLabel = function (label) {
             if (label.length > 80)
@@ -32,6 +37,8 @@ var PetalButton = /** @class */ (function () {
         /**
          * Sets the emoji of the button
          * @param emoji Buttons emoji
+         * @example <PetalButton>.setEmoji('💖');
+         * @returns
          */
         this.setEmoji = function (emoji) {
             if (!constants_1.default.emoji_regex.test(emoji))
@@ -41,7 +48,10 @@ var PetalButton = /** @class */ (function () {
         };
         /**
          * Sets the link of the button
+         * * This sets the button to be a link button. All styles will be ignored and handlers will error.
          * @param url Buttons link
+         * @example <PetalButton>.setURL('https://github.com/tascord/petal')
+         * @returns
          */
         this.setURL = function (url) {
             _this.raw.url = url;
@@ -50,46 +60,61 @@ var PetalButton = /** @class */ (function () {
         /**
          * Sets the disabled status of the button
          * @param disabled Buttons disabled status
+         * @example <PetalButton>.setDisabled(true);
+         * @returns
          */
         this.setDisabled = function (disabled) {
             _this.raw.disabled = disabled;
             return _this;
         };
         /**
-         * Sets the interaction handler for the button
-         * @param handler Button interaction handler
-         * @returns
-         */
-        this.setHandler = function (client, handler) {
-            if (_this.raw.custom_id)
-                throw new TypeError("Handler already declared, custom_id present.");
-            _this.raw.custom_id = client.interaction_manager.register_interaction(handler, _this.raw.individual || null, _this.raw.single || false);
-            return _this;
-        };
-        /**
          * Sets whether the button will cease functionality after initial interaction
+         * * Link buttons will cause this to error as they cannot have handlers
          * @param single Button singularity
+         * @example <PetalButton>.setSingle(true);
          * @returns
          */
         this.setSingle = function (single) {
+            if (_this.raw.url)
+                throw new TypeError("Cannot set singularity of link button.");
             if (_this.raw.custom_id)
                 throw new TypeError("Cannot set singularity after handler is set.");
             _this.raw.single = single;
             return _this;
         };
         /**
-         * Sets whether or not anyone can use the button or only the user who ran the command
-         * @param individual Button individuality
+         * Sets the user who can use the button. If null, anyone can use the button
+         * * Link buttons will cause this to error as they cannot have handlers
+         * @param individual Button owner if any
+         * @example <PetalButton>.setIndividual(message.author);
          * @returns
          */
         this.setIndividual = function (individual) {
+            if (_this.raw.url)
+                throw new TypeError("Cannot set individuality of link button.");
             if (_this.raw.custom_id)
                 throw new TypeError("Cannot set individuality after handler is set.");
-            _this.raw.individual = individual.id;
+            _this.raw.individual = individual ? individual.id : undefined;
+            return _this;
+        };
+        /**
+         * Sets the interaction handler for the button
+         * * Link buttons will cause this to error as they cannot have handlers
+         * @param handler Button interaction handler
+         * @example <PetalButton>.setHandler(petal, (interaction) => interaction.message.delete());
+         * @returns
+         */
+        this.setHandler = function (client, handler) {
+            if (_this.raw.custom_id)
+                throw new TypeError("Handler already declared, custom_id present.");
+            if (_this.raw.url)
+                throw new TypeError("Cannot set handler of link button.");
+            _this.raw.custom_id = client.interaction_manager.register_interaction(handler, _this.raw.individual || null, _this.raw.single || false);
             return _this;
         };
         /**
          * Gets the buttons raw data
+         * @example <PetalButton>.compile();
          * @returns
          */
         this.compile = function () {

@@ -32,7 +32,7 @@ type PetalCommandRunas = {
 
 }
 
-export type PetalCommandResponse = Promise<MessageEmbed | Array<MessageEmbed|Array<MessageActionRow>> | null>;
+export type PetalCommandResponse = Promise<MessageEmbed | [MessageEmbed,Array<MessageActionRow>] | null>;
 
 export default class PetalCommand {
 

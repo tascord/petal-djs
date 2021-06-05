@@ -25,7 +25,6 @@ const test = new PetalCommand({
  */
 test.run = (petal, args, message, user, server) => new Promise((resolve, reject) => {
 
-
     // Member is optional
     if (args[0]) {
 

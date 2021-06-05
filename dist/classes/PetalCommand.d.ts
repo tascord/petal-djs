@@ -22,7 +22,7 @@ declare type PetalCommandRunas = {
     name: string;
     arguments: Array<string>;
 };
-export declare type PetalCommandResponse = Promise<MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null>;
+export declare type PetalCommandResponse = Promise<MessageEmbed | [MessageEmbed, Array<MessageActionRow>] | null>;
 export default class PetalCommand {
     description: string;
     example: string;
