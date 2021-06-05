@@ -31,7 +31,6 @@ export default class Petal {
      * Petal client constructor
      * @param opts Petal options
      * @example new Petal({ token: 'xxx' })
-     * // => Petal Client
      */
     constructor(opts: PetalOps) {
 
@@ -260,6 +259,9 @@ export default class Petal {
             }
 
         }
+
+        // Append any further arguments
+        formatted_args = formatted_args.concat(given_arguments.slice(formatted_args.length));
 
         return formatted_args;
 

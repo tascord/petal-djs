@@ -18,7 +18,7 @@ type PetalCommandArguments = {
 
     name: string,
     description?: string,
-    type: 'string' | 'number' | 'member' | 'channel' | 'list',
+    type: 'string' | 'number' | 'member' | 'channel',
     options?: string[],
     message?: string,
     required?: boolean,
@@ -32,7 +32,7 @@ type PetalCommandRunas = {
 
 }
 
-export type PetalCommandResponse = Promise<MessageEmbed | [MessageEmbed,Array<MessageActionRow>] | null>;
+export type PetalCommandResponse = Promise<MessageEmbed | Array<MessageEmbed|Array<MessageActionRow>> | null>;
 
 export default class PetalCommand {
 

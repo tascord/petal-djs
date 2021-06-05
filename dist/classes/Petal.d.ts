@@ -24,7 +24,6 @@ export default class Petal {
      * Petal client constructor
      * @param opts Petal options
      * @example new Petal({ token: 'xxx' })
-     * // => Petal Client
      */
     constructor(opts: PetalOps);
     /**

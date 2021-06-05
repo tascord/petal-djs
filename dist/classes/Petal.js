@@ -46,7 +46,6 @@ var Petal = /** @class */ (function () {
      * Petal client constructor
      * @param opts Petal options
      * @example new Petal({ token: 'xxx' })
-     * // => Petal Client
      */
     function Petal(opts) {
         var e_1, _a;
@@ -185,6 +184,8 @@ var Petal = /** @class */ (function () {
                 if (state_1 === "break")
                     break;
             }
+            // Append any further arguments
+            formatted_args = formatted_args.concat(given_arguments.slice(formatted_args.length));
             return formatted_args;
         };
         // Ensure opts
