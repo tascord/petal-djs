@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "discord-api-types": "^0.18.1",
-    "discord.js": "github:monbrey/discord.js#message-components",
+    "discord.js": "^13.0.0-dev.cbd7f2b9aa44a9240947ed716d0e72257ac499f7",
     "quick.db": "github:lorencerri/quick.db"
   },
   "devDependencies": {

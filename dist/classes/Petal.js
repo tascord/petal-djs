@@ -93,8 +93,8 @@ var Petal = /** @class */ (function () {
             run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
                 var enqueue_delete = function (sent_message) {
-                    if (sent_message.deletable && run.delete)
-                        setTimeout(function () { return sent_message.delete(); }, 20 * 1000);
+                    if (sent_message.deletable && !sent_message.deleted && run.delete)
+                        setTimeout(function () { return sent_message.delete().catch(function () { }); }, 20 * 1000);
                 };
                 // Null response
                 if (!response)
@@ -118,7 +118,7 @@ var Petal = /** @class */ (function () {
                     if (action_rows.find(function (a) { return !(a instanceof discord_js_1.MessageActionRow); }))
                         throw new TypeError("Action row value provided not instance of action row");
                     // Send message
-                    message.reply('', {
+                    message.reply({
                         components: action_rows,
                         embed: embed
                     })

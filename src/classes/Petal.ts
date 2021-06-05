@@ -6,7 +6,6 @@ import { PetalCommand, PetalEvent } from "..";
 import PetalInteractionManager from "./PetalInteractionManager";
 import { get_database, Store } from "./PetalStorage";
 
-
 type PetalOps = {
     module_location?: string,
     privileged_intents?: boolean,
@@ -157,7 +156,7 @@ export default class Petal {
             .then((response: MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null) => {
 
                 const enqueue_delete = (sent_message: Message) => {
-                    if (sent_message.deletable && (run as PetalCommand).delete) setTimeout(() => sent_message.delete(), 20 * 1000);
+                    if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete) setTimeout(() => sent_message.delete().catch(() => {}), 20 * 1000);
                 }
 
                 // Null response
@@ -184,7 +183,7 @@ export default class Petal {
                     if (action_rows.find(a => !(a instanceof MessageActionRow))) throw new TypeError(`Action row value provided not instance of action row`);
 
                     // Send message
-                    message.reply('', {
+                    message.reply({
                         components: action_rows,
                         embed: embed
                     })
