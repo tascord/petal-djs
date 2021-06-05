@@ -155,7 +155,7 @@ export default class Petal {
             .then((response: MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null) => {
 
                 const enqueue_delete = (sent_message: Message) => {
-                    if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete) setTimeout(() => sent_message.delete().catch(() => {}), 20 * 1000);
+                    if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete === true) setTimeout(() => sent_message.delete().catch(() => {}), 20 * 1000);
                 }
 
                 // Null response
