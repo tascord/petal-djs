@@ -6,6 +6,14 @@ import { table } from 'quick.db';
  * @returns
  */
 export declare const get_database: (table_name: string, database_location?: string) => table;
+/**
+ * Gets all stores from a database
+ * @param database Quick.db table
+ * @returns
+ */
+export declare const get_all_database_values: (database: table) => {
+    [key: string]: any;
+};
 export declare class Store {
     database: table;
     id: string;

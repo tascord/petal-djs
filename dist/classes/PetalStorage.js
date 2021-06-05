@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Store = exports.get_database = void 0;
+exports.Store = exports.get_all_database_values = exports.get_database = void 0;
 var path_1 = require("path");
 var quick = require('quick.db');
 /**
@@ -15,6 +15,15 @@ var get_database = function (table_name, database_location) {
     return new base.table(table_name);
 };
 exports.get_database = get_database;
+/**
+ * Gets all stores from a database
+ * @param database Quick.db table
+ * @returns
+ */
+var get_all_database_values = function (database) {
+    return database.all().map(function (raw) { return database.get(raw.ID); });
+};
+exports.get_all_database_values = get_all_database_values;
 var Store = /** @class */ (function () {
     /**
      * PetalStorage constructor
