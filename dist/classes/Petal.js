@@ -92,7 +92,7 @@ var Petal = /** @class */ (function () {
             run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
                 var enqueue_delete = function (sent_message) {
-                    if (sent_message.deletable && !sent_message.deleted && run.delete)
+                    if (sent_message.deletable && !sent_message.deleted && run.delete === true)
                         setTimeout(function () { return sent_message.delete().catch(function () { }); }, 20 * 1000);
                 };
                 // Null response
