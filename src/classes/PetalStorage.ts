@@ -15,6 +15,17 @@ export const get_database = (table_name: string, database_location: string = joi
 
 }
 
+/**
+ * Gets all stores from a database
+ * @param database Quick.db table
+ * @returns
+ */
+export const get_all_database_values = (database: table): {[key: string]: any} => {
+
+    return database.all().map(raw => database.get(raw.ID));
+
+}
+
 export class Store {
 
     database: table;
