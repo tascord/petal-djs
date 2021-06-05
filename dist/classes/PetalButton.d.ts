@@ -1,4 +1,4 @@
-import { GuildMember, MessageButton, User } from "discord.js";
+import { GuildMember, User } from "discord.js";
 import { Petal } from "..";
 export default class PetalButton {
     private raw;
@@ -72,6 +72,6 @@ export default class PetalButton {
      * @example <PetalButton>.compile();
      * @returns
      */
-    compile: () => MessageButton;
+    compile: () => any;
 }
 //# sourceMappingURL=PetalButton.d.ts.map

@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction, MessageComponentInteraction } = require('discord.js');
+const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction } = require('discord.js');
 const { PetalCommand, PetalButton, Petal } = require('../../../dist');
 const { Store } = require('../../../dist/classes/PetalStorage');
 
