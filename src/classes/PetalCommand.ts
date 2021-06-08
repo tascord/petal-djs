@@ -71,7 +71,7 @@ export default class PetalCommand {
      * @param user_data user data store
      * @param server_data server data store
      */
-    run(petal: Petal, args: any[], message: Message, user_data: typeof Store, server_data: typeof Store): PetalCommandResponse { return Promise.resolve(null); }
+    run(petal: Petal, args: any[], message: Message, user_data: Store, server_data: Store): PetalCommandResponse { return Promise.resolve(null); }
 
 
 }
