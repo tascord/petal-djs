@@ -1,4 +1,4 @@
-import { Client, Intents, Message, MessageActionRow, MessageEmbed } from "discord.js";
+import { Client, Intents, Message, MessageActionRow, MessageAdditions, MessageEmbed, ReplyMessageOptions } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { table } from "quick.db";
 import { join } from "path";
@@ -155,15 +155,21 @@ export default class Petal {
             .then((response: MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null) => {
 
                 const enqueue_delete = (sent_message: Message) => {
-                    if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete === true) setTimeout(() => sent_message.delete().catch(() => {}), 20 * 1000);
+                    if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete === true) setTimeout(() => sent_message.delete().catch(() => { }), 20 * 1000);
+                }
+
+                const send_response = (content: (ReplyMessageOptions & { split?: false | undefined; })) => {
+
+                    if (!message.deleted) message.reply(content).then(enqueue_delete);
+                    else message.channel.send(message.author.toString(), content).then(enqueue_delete);
+
                 }
 
                 // Null response
                 if (!response) return;
 
                 // MessageEmbed response
-                if (response instanceof MessageEmbed) return message.reply(response)
-                    .then(enqueue_delete);
+                if (response instanceof MessageEmbed) return send_response(response);
 
                 // Mixed response
                 else {
@@ -182,12 +188,10 @@ export default class Petal {
                     if (action_rows.find(a => !(a instanceof MessageActionRow))) throw new TypeError(`Action row value provided not instance of action row`);
 
                     // Send message
-                    message.reply({
+                    send_response({
                         components: action_rows,
                         embed: embed
                     })
-
-                        .then(enqueue_delete);
 
                 }
 

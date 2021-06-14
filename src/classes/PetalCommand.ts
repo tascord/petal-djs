@@ -53,13 +53,13 @@ export default class PetalCommand {
 
         if(!opts) throw new TypeError(`No command opts provided.`);
         
-        this.description = opts.description || 'No description.';
-        this.example = opts.example || 'No example.';
-        this.group = opts.group || 'Un-grouped';
-        this.arguments = opts.arguments || [];
-        this.runas = opts.runas || [];
-        this.alias = opts.alias || [];
-        this.delete = opts.delete || true;
+        this.description = opts.description ??= 'No description.';
+        this.example = opts.example ??= 'No example.';
+        this.group = opts.group ??= 'Un-grouped';
+        this.arguments = opts.arguments ??= [];
+        this.runas = opts.runas ??= [];
+        this.alias = opts.alias ??= [];
+        this.delete = opts.delete ??= true;
 
     }
 
