@@ -1,6 +1,6 @@
 {
   "name": "djs-petal",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Petal — A discord.js framework!",
   "main": "dist/index.js",
   "directories": {
@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.0.0-dev.f7e420bf290f5404e8b99b8896c63e178f77bbfc",
+    "discord.js": "^13.0.0-dev.1ac9a2eb5bfef6d009de7c54d3fac5e3d4a5afdc",
     "quick.db": "github:lorencerri/quick.db"
   },
   "devDependencies": {

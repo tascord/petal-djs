@@ -1,4 +1,4 @@
-import { Client, Intents, Message, MessageActionRow, MessageAdditions, MessageEmbed, ReplyMessageOptions } from "discord.js";
+import { APIMessage, Client, Intents, Message, MessageActionRow, MessageEmbed, ReplyMessageOptions } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { table } from "quick.db";
 import { join } from "path";
@@ -147,8 +147,8 @@ export default class Petal {
         }
 
         // Format args
-        let formatted_args = this.format_args(args, message, run);
-        if (formatted_args instanceof MessageEmbed) return message.reply(formatted_args);
+        let formatted_args: any[]|MessageEmbed = this.format_args(args, message, run);
+        if (formatted_args instanceof MessageEmbed) return message.reply({embeds: [formatted_args] });
 
         run.run(this, formatted_args, message, new Store(this.users, message.author.id), new Store(this.servers, message.guild.id))
 
@@ -158,18 +158,18 @@ export default class Petal {
                     if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete === true) setTimeout(() => sent_message.delete().catch(() => { }), 20 * 1000);
                 }
 
-                const send_response = (content: (ReplyMessageOptions & { split?: false | undefined; })) => {
+                const send_response = (content: (ReplyMessageOptions &  {split?: false | undefined; })) => {
 
                     if (!message.deleted) message.reply(content).then(enqueue_delete);
-                    else message.channel.send(message.author.toString(), content).then(enqueue_delete);
-
+                    else message.channel.send({...content, content: message.author.toString()}).then(enqueue_delete);
+            
                 }
 
                 // Null response
                 if (!response) return;
 
                 // MessageEmbed response
-                if (response instanceof MessageEmbed) return send_response(response);
+                if (response instanceof MessageEmbed) return send_response({ embeds: [response] });
 
                 // Mixed response
                 else {
@@ -190,7 +190,7 @@ export default class Petal {
                     // Send message
                     send_response({
                         components: action_rows,
-                        embed: embed
+                        embeds: [embed]
                     })
 
                 }

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -88,20 +99,25 @@ var Petal = /** @class */ (function () {
             // Format args
             var formatted_args = _this.format_args(args, message, run);
             if (formatted_args instanceof discord_js_1.MessageEmbed)
-                return message.reply(formatted_args);
+                return message.reply({ embeds: [formatted_args] });
             run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
                 var enqueue_delete = function (sent_message) {
                     if (sent_message.deletable && !sent_message.deleted && run.delete === true)
                         setTimeout(function () { return sent_message.delete().catch(function () { }); }, 20 * 1000);
                 };
+                var send_response = function (content) {
+                    if (!message.deleted)
+                        message.reply(content).then(enqueue_delete);
+                    else
+                        message.channel.send(__assign(__assign({}, content), { content: message.author.toString() })).then(enqueue_delete);
+                };
                 // Null response
                 if (!response)
                     return;
                 // MessageEmbed response
                 if (response instanceof discord_js_1.MessageEmbed)
-                    return message.reply(response)
-                        .then(enqueue_delete);
+                    return send_response({ embeds: [response] });
                 // Mixed response
                 else {
                     // Convert type
@@ -117,11 +133,10 @@ var Petal = /** @class */ (function () {
                     if (action_rows.find(function (a) { return !(a instanceof discord_js_1.MessageActionRow); }))
                         throw new TypeError("Action row value provided not instance of action row");
                     // Send message
-                    message.reply({
+                    send_response({
                         components: action_rows,
-                        embed: embed
-                    })
-                        .then(enqueue_delete);
+                        embeds: [embed]
+                    });
                 }
             })
                 .catch(console.error);
