@@ -1,12 +1,12 @@
-import { Client, Message, MessageEmbed } from "discord.js";
+import { Client, Intents, Message, MessageEmbed } from "discord.js";
 import { table } from "quick.db";
 import { PetalCommand } from "..";
 import PetalInteractionManager from "./PetalInteractionManager";
 declare type PetalOps = {
     module_location?: string;
-    privileged_intents?: boolean;
     database_location?: string;
     token: string;
+    intents: Intents;
 };
 export default class Petal {
     client: Client;

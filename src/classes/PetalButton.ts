@@ -147,7 +147,7 @@ export default class PetalButton {
         let button = new MessageButton();
         if (this.raw.url) button.setURL(this.raw.url);
         if (this.raw.label) button.setLabel(this.raw.label);
-        if (this.raw.custom_id) button.setCustomID(this.raw.custom_id);
+        if (this.raw.custom_id) button.setCustomId(this.raw.custom_id);
 
         button.setStyle(this.raw.style);
         button.setDisabled(this.raw.disabled);

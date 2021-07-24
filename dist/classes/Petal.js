@@ -206,9 +206,14 @@ var Petal = /** @class */ (function () {
         // Ensure opts
         if (!opts)
             throw new TypeError('Missing opts.');
+        // Ensure token & intents
+        if (!opts.token)
+            throw new TypeError('Missing token.');
+        if (!opts.intents)
+            throw new TypeError('Missing client intents.');
         // Create client
         this.client = new discord_js_1.Client({
-            intents: (opts.privileged_intents || false) ? discord_js_1.Intents.ALL : discord_js_1.Intents.NON_PRIVILEGED
+            intents: opts.intents
         });
         // Get absolute location
         this.absolute_module_location = opts.module_location;
@@ -248,8 +253,8 @@ var Petal = /** @class */ (function () {
             }
         });
         var _loop_1 = function (name_1, event_1) {
-            if (name_1 === 'interaction')
-                throw new Error("The interaction event is reserved by petal.");
+            if (name_1 === 'interactionCreate')
+                throw new Error("The interactionCreate event is reserved by petal.");
             // Runs the event with the current petal instance prepended in the arguments
             this_1.client.on(name_1, function () {
                 var _a;
@@ -277,7 +282,7 @@ var Petal = /** @class */ (function () {
         }
         // Interaction manager
         this.interaction_manager = new PetalInteractionManager_1.default();
-        this.client.on('interaction', this.interaction_manager.handle_interaction);
+        this.client.on('interactionCreate', this.interaction_manager.handle_interaction);
         // Data stores
         this.database_location = opts.database_location;
         this.users = PetalStorage_1.get_database('users', this.database_location);

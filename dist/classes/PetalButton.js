@@ -138,7 +138,7 @@ var PetalButton = /** @class */ (function () {
             if (_this.raw.label)
                 button.setLabel(_this.raw.label);
             if (_this.raw.custom_id)
-                button.setCustomID(_this.raw.custom_id);
+                button.setCustomId(_this.raw.custom_id);
             button.setStyle(_this.raw.style);
             button.setDisabled(_this.raw.disabled);
             if (_this.raw.emoji)

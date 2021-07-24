@@ -8,7 +8,7 @@ type PetalInteractionData = {
 }
 
 export default class PetalInteractionManager {
-    
+
     interactions: { string: PetalInteractionData } | {};
 
     /**
@@ -18,16 +18,16 @@ export default class PetalInteractionManager {
         this.interactions = {};
         setInterval(() => {
 
-            for(let [key, value] of Object.entries(this.interactions)) {
+            for (let [key, value] of Object.entries(this.interactions)) {
 
                 let registered = (value as any).registered;
-                
-                if(!registered) {
+
+                if (!registered) {
                     console.warn(`No registered time for ${key}.`);
                     continue;
                 }
 
-                if(Date.now() - registered > (5 * 60 * 1000)) delete (this.interactions as any) [key];
+                if (Date.now() - registered > (5 * 60 * 1000)) delete (this.interactions as any)[key];
 
             }
 
@@ -41,9 +41,9 @@ export default class PetalInteractionManager {
      * @returns 
      */
     register_interaction = (handler: Function, linked_user: string | null, single: boolean, custom_id?: string): string => {
-        
+
         let id = custom_id || this.generate_token();
-        (this.interactions as any) [id] = {
+        (this.interactions as any)[id] = {
             handler,
             linked_user,
             single: single,
@@ -60,21 +60,20 @@ export default class PetalInteractionManager {
      */
     handle_interaction = (interaction: Interaction): void => {
 
-        if(!(interaction as any).customID) {
+        if (!(interaction as any).customId) {
 
             // Handle action if un-registered
-            if((interaction as any).deferUpdate) (interaction as any).deferUpdate();
-            return;
+            if ((interaction as any).deferUpdate) (interaction as any).deferUpdate();
 
         };
-        
-        let data = ((this.interactions as any) [(interaction as any).customID] as PetalInteractionData |null);
 
-        if(!data) return (interaction as any).deferUpdate();
-        if(data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
+        let data = ((this.interactions as any)[(interaction as any).customId] as PetalInteractionData | null);
+
+        if (!data) return (interaction as any).deferUpdate();
+        if (data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
 
         data.handler(interaction);
-        if(data.single) delete (this.interactions as any) [(interaction as any).customID];
+        if (data.single) delete (this.interactions as any)[(interaction as any).customId];
 
     }
 
@@ -93,7 +92,7 @@ export default class PetalInteractionManager {
         }
 
         while (
-            (this.interactions as any) [token]
+            (this.interactions as any)[token]
         )
 
         return token;

@@ -1,4 +1,4 @@
-import { APIMessage, Client, Intents, Message, MessageActionRow, MessageEmbed, ReplyMessageOptions } from "discord.js";
+import { Client, Intents, Message, MessageActionRow, MessageEmbed, ReplyMessageOptions } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { table } from "quick.db";
 import { join } from "path";
@@ -8,9 +8,9 @@ import { get_database, Store } from "./PetalStorage";
 
 type PetalOps = {
     module_location?: string,
-    privileged_intents?: boolean,
     database_location?: string,
     token: string,
+    intents: Intents
 }
 
 export default class Petal {
@@ -37,9 +37,13 @@ export default class Petal {
         // Ensure opts
         if (!opts) throw new TypeError('Missing opts.');
 
+        // Ensure token & intents
+        if (!opts.token) throw new TypeError('Missing token.')
+        if (!opts.intents) throw new TypeError('Missing client intents.');
+
         // Create client
         this.client = new Client({
-            intents: (opts.privileged_intents || false) ? Intents.ALL : Intents.NON_PRIVILEGED
+            intents: opts.intents
         })
 
         // Get absolute location
@@ -83,7 +87,7 @@ export default class Petal {
         // Register events
         for (let [name, event] of Object.entries(this.modules.events)) {
 
-            if (name === 'interaction') throw new Error(`The interaction event is reserved by petal.`);
+            if (name === 'interactionCreate') throw new Error(`The interactionCreate event is reserved by petal.`);
 
             // Runs the event with the current petal instance prepended in the arguments
             this.client.on(name, (...args: any) => {
@@ -94,7 +98,7 @@ export default class Petal {
 
         // Interaction manager
         this.interaction_manager = new PetalInteractionManager();
-        this.client.on('interaction', this.interaction_manager.handle_interaction);
+        this.client.on('interactionCreate', this.interaction_manager.handle_interaction);
 
         // Data stores
         this.database_location = opts.database_location;
@@ -147,8 +151,8 @@ export default class Petal {
         }
 
         // Format args
-        let formatted_args: any[]|MessageEmbed = this.format_args(args, message, run);
-        if (formatted_args instanceof MessageEmbed) return message.reply({embeds: [formatted_args] });
+        let formatted_args: any[] | MessageEmbed = this.format_args(args, message, run);
+        if (formatted_args instanceof MessageEmbed) return message.reply({ embeds: [formatted_args] });
 
         run.run(this, formatted_args, message, new Store(this.users, message.author.id), new Store(this.servers, message.guild.id))
 
@@ -158,11 +162,11 @@ export default class Petal {
                     if (sent_message.deletable && !sent_message.deleted && (run as PetalCommand).delete === true) setTimeout(() => sent_message.delete().catch(() => { }), 20 * 1000);
                 }
 
-                const send_response = (content: (ReplyMessageOptions &  {split?: false | undefined; })) => {
+                const send_response = (content: (ReplyMessageOptions & { split?: false | undefined; })) => {
 
                     if (!message.deleted) message.reply(content).then(enqueue_delete);
-                    else message.channel.send({...content, content: message.author.toString()}).then(enqueue_delete);
-            
+                    else message.channel.send({ ...content, content: message.author.toString() }).then(enqueue_delete);
+
                 }
 
                 // Null response
