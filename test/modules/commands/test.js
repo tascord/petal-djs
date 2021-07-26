@@ -24,12 +24,12 @@ const test = new PetalCommand({
  * @returns 
  */
 test.run = (petal, args, message, user, server) => new Promise((resolve, reject) => {
-
+    
     // Member is optional
     if (args[0]) {
 
         // Member
-        const member = args[0]; 0
+        const member = args[0];
 
         // Should never be needed
         if ((!member instanceof GuildMember)) throw new Error("Member not required type.");

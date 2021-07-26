@@ -61,7 +61,7 @@ export default class PetalInteractionManager {
      * Handles an interaction
      * @param interaction Interaction data
      */
-    handle_interaction = (interaction: Interaction, petal: Petal): void => {
+    handle_interaction = async (interaction: Interaction, petal: Petal) => {
 
         if (interaction instanceof CommandInteraction) {
 
@@ -77,23 +77,46 @@ export default class PetalInteractionManager {
                 interaction.deleteReply();
             }
 
+            if (!interaction.guild) return;
+            const guild = await interaction.guild.fetch();
+            await guild.members.fetch()
+
             // Handle command
             command.run(
                 petal,
-                command.arguments.map(argument => interaction.options.get(argument.name.toLowerCase(), argument.required)),
+                command.arguments.map(command_argument => {
+
+                    const argument = interaction.options.get(command_argument.name.toLowerCase(), command_argument.required);
+                    if (!argument) return null;
+
+                    if (command_argument.type === 'channel') return argument.channel;
+                    if (command_argument.type === 'number') return argument.value;
+                    if (command_argument.type === 'string') return argument.value;
+
+                    if (command_argument.type === 'member') {
+
+                        const user = interaction.user;
+                        if (!user) return;
+
+                        return guild.members.cache.get(user.id);
+
+                    }
+
+
+                }),
                 interaction,
                 new Store(petal.users, interaction.user.id),
                 new Store(petal.servers, (interaction.guild?.id ?? 'NULL').toString())
             )
 
-            .then((response: PetalCommandResponseData) => {
+                .then((response: PetalCommandResponseData) => {
 
-                if(response === null) return interaction.deleteReply();
-                const message_data = petal.format_command_response(interaction.commandName, response);
+                    if (response === null) return interaction.deleteReply();
+                    const message_data = petal.format_command_response(interaction.commandName, response);
 
-                interaction.followUp(message_data);
+                    interaction.followUp(message_data);
 
-            })
+                })
 
         }
 

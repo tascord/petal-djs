@@ -25,7 +25,7 @@ export default class PetalInteractionManager {
      * Handles an interaction
      * @param interaction Interaction data
      */
-    handle_interaction: (interaction: Interaction, petal: Petal) => void;
+    handle_interaction: (interaction: Interaction, petal: Petal) => Promise<any>;
     /**
      * Generates an unused token (custom_id)
      * @returns Unused token
