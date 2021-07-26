@@ -1,4 +1,7 @@
-import { Interaction } from "discord.js";
+import { CommandInteraction, Interaction, MessageComponentInteraction } from "discord.js";
+import Petal from "./Petal";
+import { PetalCommandResponseData } from "./PetalCommand";
+import { Store } from "./PetalStorage";
 
 type PetalInteractionData = {
     handler: Function,
@@ -9,7 +12,7 @@ type PetalInteractionData = {
 
 export default class PetalInteractionManager {
 
-    interactions: { string: PetalInteractionData } | {};
+    interactions: { [key: string]: PetalInteractionData } | {};
 
     /**
      * InteractionManager constructor
@@ -58,22 +61,62 @@ export default class PetalInteractionManager {
      * Handles an interaction
      * @param interaction Interaction data
      */
-    handle_interaction = (interaction: Interaction): void => {
+    handle_interaction = (interaction: Interaction, petal: Petal): void => {
 
-        if (!(interaction as any).customId) {
+        if (interaction instanceof CommandInteraction) {
 
-            // Handle action if un-registered
-            if ((interaction as any).deferUpdate) (interaction as any).deferUpdate();
+            // Defer temporarily
+            interaction.defer();
 
-        };
+            // Get corresponding command
+            const command = petal.modules.commands[interaction.commandName];
 
-        let data = ((this.interactions as any)[(interaction as any).customId] as PetalInteractionData | null);
+            // Warn on no handler
+            if (!command) {
+                console.warn(`Command '/${interaction.commandName}' was run, however the command file doesn't exist.`);
+                interaction.deleteReply();
+            }
 
-        if (!data) return (interaction as any).deferUpdate();
-        if (data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
+            // Handle command
+            command.run(
+                petal,
+                command.arguments.map(argument => interaction.options.get(argument.name.toLowerCase(), argument.required)),
+                interaction,
+                new Store(petal.users, interaction.user.id),
+                new Store(petal.servers, (interaction.guild?.id ?? 'NULL').toString())
+            )
 
-        data.handler(interaction);
-        if (data.single) delete (this.interactions as any)[(interaction as any).customId];
+            .then((response: PetalCommandResponseData) => {
+
+                if(response === null) return interaction.deleteReply();
+                const message_data = petal.format_command_response(interaction.commandName, response);
+
+                interaction.followUp(message_data);
+
+            })
+
+        }
+
+        // Message Buttons
+        else if (interaction instanceof MessageComponentInteraction) {
+
+            if (!(interaction as any).customId) {
+
+                // Handle action if un-registered
+                if ((interaction as any).deferUpdate) (interaction as any).deferUpdate();
+
+            };
+
+            let data = ((this.interactions as any)[(interaction as any).customId] as PetalInteractionData | null);
+
+            if (!data) return (interaction as any).deferUpdate();
+            if (data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
+
+            data.handler(interaction);
+            if (data.single) delete (this.interactions as any)[(interaction as any).customId];
+
+
+        }
 
     }
 

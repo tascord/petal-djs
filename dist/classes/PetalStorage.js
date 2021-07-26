@@ -27,13 +27,16 @@ exports.get_all_database_values = get_all_database_values;
 var Store = /** @class */ (function () {
     /**
      * PetalStorage constructor
-     * @param database Quick.db table
+     * @param database Quick.db table or table name
      * @param database_location Database location
      * @param id Table row ID
      */
     function Store(database, id, database_location) {
         if (database_location === void 0) { database_location = path_1.join('./', 'petal.sqlite'); }
-        this.database = database;
+        if (typeof (database) === 'string')
+            this.database = exports.get_database(database, database_location);
+        else
+            this.database = database;
         this.id = id;
     }
     /**

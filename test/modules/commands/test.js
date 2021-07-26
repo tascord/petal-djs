@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction } = require('discord.js');
+const { MessageEmbed, MessageActionRow, Message, GuildMember, Interaction, CommandInteraction } = require('discord.js');
 const { PetalCommand, PetalButton, Petal } = require('../../../dist');
 const { Store } = require('../../../dist/classes/PetalStorage');
 
@@ -18,7 +18,7 @@ const test = new PetalCommand({
  * Example petal command
  * @param {Petal} petal Petal instance 
  * @param {Array} args Array of arguments, in this case containing a member
- * @param {Message} message Message object
+ * @param {Message|CommandInteraction} message Message object
  * @param {Store} user User specific storage 
  * @param {Store} server Server specific storage 
  * @returns 
@@ -54,7 +54,7 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
         new MessageEmbed()
             .setColor('#7289da') // Blurple supremacy
             .setTitle('Welcome to petal!')
-            .setThumbnail(message.client.user.displayAvatarURL())
+            .setThumbnail(petal.client.user.displayAvatarURL())
             .setDescription('Petal is a new [Discord.js](https://discord.js.org) framework!\nClick the button below to visit Petal\'s GitHub.'),
 
         // Array of Action Rows (Max 5)

@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageEmbed } from 'discord.js';
+import { CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 
@@ -32,7 +32,8 @@ type PetalCommandRunas = {
 
 }
 
-export type PetalCommandResponse = Promise<MessageEmbed | Array<MessageEmbed|Array<MessageActionRow>> | null>;
+export type PetalCommandResponse = Promise<PetalCommandResponseData>;
+export type PetalCommandResponseData = MessageEmbed | [MessageEmbed, Array<MessageActionRow>] | null;
 
 export default class PetalCommand {
 
@@ -51,8 +52,8 @@ export default class PetalCommand {
      */
     constructor(opts: PetalCommandOpts) {
 
-        if(!opts) throw new TypeError(`No command opts provided.`);
-        
+        if (!opts) throw new TypeError(`No command opts provided.`);
+
         this.description = opts.description ??= 'No description.';
         this.example = opts.example ??= 'No example.';
         this.group = opts.group ??= 'Un-grouped';
@@ -71,7 +72,7 @@ export default class PetalCommand {
      * @param user_data user data store
      * @param server_data server data store
      */
-    run(petal: Petal, args: any[], message: Message, user_data: Store, server_data: Store): PetalCommandResponse { return Promise.resolve(null); }
+    run(petal: Petal, args: any[], message: Message | CommandInteraction, user_data: Store, server_data: Store): PetalCommandResponse { return Promise.resolve(null); }
 
 
 }

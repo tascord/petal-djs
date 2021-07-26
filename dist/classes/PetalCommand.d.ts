@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageEmbed } from 'discord.js';
+import { CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 declare type PetalCommandOpts = {
@@ -22,7 +22,8 @@ declare type PetalCommandRunas = {
     name: string;
     arguments: Array<string>;
 };
-export declare type PetalCommandResponse = Promise<MessageEmbed | Array<MessageEmbed | Array<MessageActionRow>> | null>;
+export declare type PetalCommandResponse = Promise<PetalCommandResponseData>;
+export declare type PetalCommandResponseData = MessageEmbed | [MessageEmbed, Array<MessageActionRow>] | null;
 export default class PetalCommand {
     description: string;
     example: string;
@@ -45,7 +46,7 @@ export default class PetalCommand {
      * @param user_data user data store
      * @param server_data server data store
      */
-    run(petal: Petal, args: any[], message: Message, user_data: Store, server_data: Store): PetalCommandResponse;
+    run(petal: Petal, args: any[], message: Message | CommandInteraction, user_data: Store, server_data: Store): PetalCommandResponse;
 }
 export {};
 //# sourceMappingURL=PetalCommand.d.ts.map

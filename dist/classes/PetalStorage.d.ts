@@ -17,14 +17,13 @@ export declare const get_all_database_values: (database: table) => {
 export declare class Store {
     database: table;
     id: string;
-    base: any;
     /**
      * PetalStorage constructor
-     * @param database Quick.db table
+     * @param database Quick.db table or table name
      * @param database_location Database location
      * @param id Table row ID
      */
-    constructor(database: table, id: string, database_location?: string);
+    constructor(database: table | string, id: string, database_location?: string);
     /**
      * Get a value from a store
      * @param key Sub value key

@@ -27,6 +27,8 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var discord_js_1 = require("discord.js");
+var PetalStorage_1 = require("./PetalStorage");
 var PetalInteractionManager = /** @class */ (function () {
     /**
      * InteractionManager constructor
@@ -53,21 +55,44 @@ var PetalInteractionManager = /** @class */ (function () {
          * Handles an interaction
          * @param interaction Interaction data
          */
-        this.handle_interaction = function (interaction) {
-            if (!interaction.customId) {
-                // Handle action if un-registered
-                if (interaction.deferUpdate)
-                    interaction.deferUpdate();
+        this.handle_interaction = function (interaction, petal) {
+            var _a, _b;
+            if (interaction instanceof discord_js_1.CommandInteraction) {
+                // Defer temporarily
+                interaction.defer();
+                // Get corresponding command
+                var command = petal.modules.commands[interaction.commandName];
+                // Warn on no handler
+                if (!command) {
+                    console.warn("Command '/" + interaction.commandName + "' was run, however the command file doesn't exist.");
+                    interaction.deleteReply();
+                }
+                // Handle command
+                command.run(petal, command.arguments.map(function (argument) { return interaction.options.get(argument.name.toLowerCase(), argument.required); }), interaction, new PetalStorage_1.Store(petal.users, interaction.user.id), new PetalStorage_1.Store(petal.servers, ((_b = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : 'NULL').toString()))
+                    .then(function (response) {
+                    if (response === null)
+                        return interaction.deleteReply();
+                    var message_data = petal.format_command_response(interaction.commandName, response);
+                    interaction.followUp(message_data);
+                });
             }
-            ;
-            var data = _this.interactions[interaction.customId];
-            if (!data)
-                return interaction.deferUpdate();
-            if (data.linked_user ? data.linked_user != interaction.user.id : false)
-                return interaction.deferUpdate();
-            data.handler(interaction);
-            if (data.single)
-                delete _this.interactions[interaction.customId];
+            // Message Buttons
+            else if (interaction instanceof discord_js_1.MessageComponentInteraction) {
+                if (!interaction.customId) {
+                    // Handle action if un-registered
+                    if (interaction.deferUpdate)
+                        interaction.deferUpdate();
+                }
+                ;
+                var data = _this.interactions[interaction.customId];
+                if (!data)
+                    return interaction.deferUpdate();
+                if (data.linked_user ? data.linked_user != interaction.user.id : false)
+                    return interaction.deferUpdate();
+                data.handler(interaction);
+                if (data.single)
+                    delete _this.interactions[interaction.customId];
+            }
         };
         /**
          * Generates an unused token (custom_id)

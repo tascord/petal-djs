@@ -1,4 +1,5 @@
 import { Interaction } from "discord.js";
+import Petal from "./Petal";
 declare type PetalInteractionData = {
     handler: Function;
     linked_user: string | null;
@@ -7,7 +8,7 @@ declare type PetalInteractionData = {
 };
 export default class PetalInteractionManager {
     interactions: {
-        string: PetalInteractionData;
+        [key: string]: PetalInteractionData;
     } | {};
     /**
      * InteractionManager constructor
@@ -24,7 +25,7 @@ export default class PetalInteractionManager {
      * Handles an interaction
      * @param interaction Interaction data
      */
-    handle_interaction: (interaction: Interaction) => void;
+    handle_interaction: (interaction: Interaction, petal: Petal) => void;
     /**
      * Generates an unused token (custom_id)
      * @returns Unused token

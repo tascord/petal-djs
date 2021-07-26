@@ -10,17 +10,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -36,6 +25,17 @@ var __read = (this && this.__read) || function (o, n) {
         finally { if (e) throw e.error; }
     }
     return ar;
+};
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 var __spreadArray = (this && this.__spreadArray) || function (to, from) {
     for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
@@ -106,40 +106,43 @@ var Petal = /** @class */ (function () {
                     if (sent_message.deletable && !sent_message.deleted && run.delete === true)
                         setTimeout(function () { return sent_message.delete().catch(function () { }); }, 20 * 1000);
                 };
-                var send_response = function (content) {
-                    if (!message.deleted)
-                        message.reply(content).then(enqueue_delete);
-                    else
-                        message.channel.send(__assign(__assign({}, content), { content: message.author.toString() })).then(enqueue_delete);
-                };
                 // Null response
                 if (!response)
                     return;
-                // MessageEmbed response
-                if (response instanceof discord_js_1.MessageEmbed)
-                    return send_response({ embeds: [response] });
-                // Mixed response
-                else {
-                    // Convert type
-                    response = response;
-                    // Get embed
-                    var embed = response.shift();
-                    if (!(embed instanceof discord_js_1.MessageEmbed))
-                        throw new TypeError(command + " returned an invalid value. Mixed Embed/ActionRow returns must begin with an embed");
-                    var action_rows = response.shift();
-                    if (!action_rows)
-                        throw new TypeError("Mixed Embed/ActionRow given but no action row was present.");
-                    // Ensure type
-                    if (action_rows.find(function (a) { return !(a instanceof discord_js_1.MessageActionRow); }))
-                        throw new TypeError("Action row value provided not instance of action row");
-                    // Send message
-                    send_response({
-                        components: action_rows,
-                        embeds: [embed]
-                    });
-                }
+                var content = _this.format_command_response(command, response);
+                if (!message.deleted)
+                    message.reply(content).then(enqueue_delete);
+                else
+                    message.channel.send(__assign(__assign({}, content), { content: message.author.toString() })).then(enqueue_delete);
             })
                 .catch(console.error);
+        };
+        this.format_command_response = function (command_name, response_data) {
+            var response = response_data;
+            // MessageEmbed response
+            if (response instanceof discord_js_1.MessageEmbed)
+                return { embeds: [response] };
+            // Mixed response
+            else {
+                // Convert type
+                response = response;
+                // Get embed
+                var embed = response.shift();
+                if (!(embed instanceof discord_js_1.MessageEmbed))
+                    throw new TypeError(command_name + " returned an invalid value. Mixed Embed/ActionRow returns must begin with an embed");
+                // TODO: Cleanup hacky solution
+                var action_rows = response.shift();
+                if (!action_rows)
+                    throw new TypeError("Mixed Embed/ActionRow given but no action row was present.");
+                // Ensure type
+                if (action_rows.find(function (a) { return !(a instanceof discord_js_1.MessageActionRow); }))
+                    throw new TypeError("Action row value provided not instance of action row");
+                // Send message
+                return ({
+                    components: action_rows,
+                    embeds: [embed]
+                });
+            }
         };
         this.format_args = function (given_arguments, message, command) {
             var error = function (index, message) {
@@ -202,6 +205,37 @@ var Petal = /** @class */ (function () {
             // Append any further arguments
             formatted_args = formatted_args.concat(given_arguments.slice(formatted_args.length));
             return formatted_args;
+        };
+        /**
+         * Deploys slash commands globally or to a guild if provided
+         * @param guild Guild to push to
+         */
+        this.deploy_commands = function (guild) {
+            var _a;
+            var command_data = Object.entries(_this.modules.commands).map(function (command) {
+                var _a = __read(command, 2), name = _a[0], data = _a[1];
+                return {
+                    name: name.toLowerCase(),
+                    description: data.description,
+                    options: data.arguments.map(function (argument) {
+                        var _a;
+                        return {
+                            name: argument.name.toLowerCase(),
+                            description: (_a = argument.description) !== null && _a !== void 0 ? _a : 'No description provided.',
+                            type: (argument.type === 'channel' ? "CHANNEL" :
+                                argument.type === 'member' ? "USER" :
+                                    argument.type === 'number' ? "INTEGER" :
+                                        "STRING")
+                        };
+                    })
+                };
+            });
+            if (guild)
+                guild.commands.set(command_data);
+            else
+                (_a = _this.client.application) === null || _a === void 0 ? void 0 : _a.fetch().then(function (application) {
+                    application.commands.set(command_data);
+                });
         };
         // Ensure opts
         if (!opts)
@@ -282,7 +316,7 @@ var Petal = /** @class */ (function () {
         }
         // Interaction manager
         this.interaction_manager = new PetalInteractionManager_1.default();
-        this.client.on('interactionCreate', this.interaction_manager.handle_interaction);
+        this.client.on('interactionCreate', function (interaction) { return _this.interaction_manager.handle_interaction(interaction, _this); });
         // Data stores
         this.database_location = opts.database_location;
         this.users = PetalStorage_1.get_database('users', this.database_location);

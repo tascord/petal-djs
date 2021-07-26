@@ -20,7 +20,7 @@ export const get_database = (table_name: string, database_location: string = joi
  * @param database Quick.db table
  * @returns
  */
-export const get_all_database_values = (database: table): {[key: string]: any} => {
+export const get_all_database_values = (database: table): { [key: string]: any } => {
 
     return database.all().map(raw => database.get(raw.ID));
 
@@ -30,17 +30,18 @@ export class Store {
 
     database: table;
     id: string;
-    base: any; // Bruh
 
     /**
      * PetalStorage constructor
-     * @param database Quick.db table
+     * @param database Quick.db table or table name
      * @param database_location Database location
      * @param id Table row ID 
      */
-    constructor(database: table, id: string, database_location: string = join('./', 'petal.sqlite')) {
+    constructor(database: table | string, id: string, database_location = join('./', 'petal.sqlite')) {
 
-        this.database = database;
+        if (typeof(database) === 'string') this.database = get_database(database, database_location);
+        else this.database = database;
+
         this.id = id;
 
     }
