@@ -63,7 +63,6 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var discord_js_1 = require("discord.js");
 var PetalStorage_1 = require("./PetalStorage");
 var PetalInteractionManager = /** @class */ (function () {
     /**
@@ -97,7 +96,7 @@ var PetalInteractionManager = /** @class */ (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        if (!(interaction instanceof discord_js_1.CommandInteraction)) return [3 /*break*/, 3];
+                        if (!interaction.isCommand()) return [3 /*break*/, 3];
                         // Defer temporarily
                         interaction.defer();
                         command = petal.modules.commands[interaction.commandName];
@@ -142,7 +141,7 @@ var PetalInteractionManager = /** @class */ (function () {
                         });
                         return [3 /*break*/, 4];
                     case 3:
-                        if (interaction instanceof discord_js_1.MessageComponentInteraction) {
+                        if (interaction.isButton() || interaction.isSelectMenu()) {
                             if (!interaction.customId) {
                                 // Handle action if un-registered
                                 if (interaction.deferUpdate)

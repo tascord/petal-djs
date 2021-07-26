@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction, MessageComponentInteraction } from "discord.js";
+import { CommandInteraction, Interaction, MessageComponentInteraction, SelectMenuInteraction } from "discord.js";
 import Petal from "./Petal";
 import { PetalCommandResponseData } from "./PetalCommand";
 import { Store } from "./PetalStorage";
@@ -63,7 +63,8 @@ export default class PetalInteractionManager {
      */
     handle_interaction = async (interaction: Interaction, petal: Petal) => {
 
-        if (interaction instanceof CommandInteraction) {
+        // Slash Commands
+        if (interaction.isCommand()) {
 
             // Defer temporarily
             interaction.defer();
@@ -120,8 +121,8 @@ export default class PetalInteractionManager {
 
         }
 
-        // Message Buttons
-        else if (interaction instanceof MessageComponentInteraction) {
+        // Message Buttons / Select Menu's
+        else if (interaction.isButton() || interaction.isSelectMenu()) {
 
             if (!(interaction as any).customId) {
 
