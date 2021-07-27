@@ -11,12 +11,12 @@ ready.run = (petal) => {
     console.log(`Petal instance logged in: ${petal.client.user.tag}.`);
 
     // Deploy to test server
-    // petal.client.guilds.fetch('-- test server id here --')
-    //     .then(guild => {
+    petal.client.guilds.fetch('-- test server id here --')
+        .then(guild => {
 
-    //         petal.deploy_commands(guild);
+            petal.deploy_commands(guild);
 
-    //     });
+        });
 
 }
 

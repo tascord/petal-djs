@@ -12,7 +12,7 @@ type PetalOps = {
     database_location?: string,
     token: string,
     intents: Intents,
-    error_handler?: (error: string) => ReplyMessageOptions;
+    error_handler?: (petal: Petal, error: string) => ReplyMessageOptions;
 }
 
 export default class Petal {
@@ -28,7 +28,7 @@ export default class Petal {
     database_location: string | undefined;
     users: table;
     servers: table;
-    error_handler: (error: string) => ReplyMessageOptions;
+    error_handler: (petal: Petal, error: string) => ReplyMessageOptions;
 
     /**
      * Petal client constructor
@@ -60,7 +60,7 @@ export default class Petal {
         };
 
         // Error handler
-        this.error_handler = opts.error_handler ?? ((message: string): ReplyMessageOptions => {
+        this.error_handler = opts.error_handler ?? ((_: Petal, message: string): ReplyMessageOptions => {
 
             return {
                 embeds: [
@@ -232,7 +232,7 @@ export default class Petal {
 
         const error = (index: number, message?: string): ReplyMessageOptions => {
 
-            return this.error_handler(message || command_arguments[index].message || `Invalid argument type provided.`);
+            return this.error_handler(this, message || command_arguments[index].message || `Invalid argument type provided.`);
 
         }
 

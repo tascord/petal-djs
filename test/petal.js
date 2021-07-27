@@ -3,10 +3,11 @@ const { Petal } = require('../dist');
 
 /**
  * Handles errors with ** style **
+ * @param {Petal} petal Petal instance
  * @param {string} message Error message
  * @returns {ReplyMessageOptions}
  */
-const custom_error_handler = (message) => {
+const custom_error_handler = (petal, message) => {
 
     return {
 

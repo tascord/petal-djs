@@ -1,6 +1,6 @@
 {
   "name": "djs-petal",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Petal — A discord.js framework!",
   "main": "dist/index.js",
   "directories": {
