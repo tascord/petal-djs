@@ -8,7 +8,7 @@ const test = new PetalCommand({
             name: 'Member',
             type: 'member',
             message: 'Please provide a valid member',
-            required: false
+            required: true
         }
     ]
 })

@@ -11,7 +11,8 @@ type PetalOps = {
     module_location?: string,
     database_location?: string,
     token: string,
-    intents: Intents
+    intents: Intents,
+    error_handler?: (error: string) => ReplyMessageOptions;
 }
 
 export default class Petal {
@@ -27,6 +28,7 @@ export default class Petal {
     database_location: string | undefined;
     users: table;
     servers: table;
+    error_handler: (error: string) => ReplyMessageOptions;
 
     /**
      * Petal client constructor
@@ -56,6 +58,20 @@ export default class Petal {
             commands: {},
             services: {}
         };
+
+        // Error handler
+        this.error_handler = opts.error_handler ?? ((message: string): ReplyMessageOptions => {
+
+            return {
+                embeds: [
+                    new MessageEmbed()
+                        .setColor(0xff006a)
+                        .setTitle(`❌ Invalid arguments provided.`)
+                        .setDescription(message)
+                ]
+            };
+
+        });
 
         // Load all commands, events & services
         ['commands', 'events', 'services'].forEach(sub => {
@@ -152,8 +168,9 @@ export default class Petal {
         }
 
         // Format args
-        let formatted_args: any[] | MessageEmbed = this.format_args(args, message, run as PetalCommand);
-        if (formatted_args instanceof MessageEmbed) return message.reply({ embeds: [formatted_args] });
+        let formatted_args: any[] | ReplyMessageOptions = this.format_args(args, message, run as PetalCommand);
+        if ((formatted_args as ReplyMessageOptions).embeds !== undefined) return message.reply(formatted_args as ReplyMessageOptions);
+        formatted_args = formatted_args as any[];
 
         (run as PetalCommand).run(this, formatted_args, message, new Store(this.users, message.author.id), new Store(this.servers, message.guild.id))
 
@@ -202,7 +219,7 @@ export default class Petal {
             if (action_rows.find(a => !(a instanceof MessageActionRow))) throw new TypeError(`Action row value provided not instance of action row`);
 
             // Send message
-            return({
+            return ({
                 components: action_rows,
                 embeds: [embed]
             })
@@ -211,14 +228,11 @@ export default class Petal {
 
     }
 
-    format_args = (given_arguments: Array<string>, message: Message, command: PetalCommand): Array<any> | MessageEmbed => {
+    format_args = (given_arguments: Array<string>, message: Message, command: PetalCommand): Array<any> | ReplyMessageOptions => {
 
-        const error = (index: number, message?: string): MessageEmbed => {
+        const error = (index: number, message?: string): ReplyMessageOptions => {
 
-            return new MessageEmbed()
-                .setColor(0xff006a)
-                .setTitle(`❌ Invalid arguments provided.`)
-                .setDescription(message || command_arguments[index].message || `Invalid argument type provided.`);
+            return this.error_handler(message || command_arguments[index].message || `Invalid argument type provided.`);
 
         }
 
@@ -233,12 +247,22 @@ export default class Petal {
             switch (command_arguments[i].type) {
 
                 case "string":
-                    if (typeof (given_arguments[i]) !== command_arguments[i].type) return error(i);
+                    if (typeof (given_arguments[i]) !== 'string') return error(i);
+                    if (command_arguments[i].list !== undefined) {
+                        if (!command_arguments[i].list?.find(argument => argument.value.toString().toLowerCase() === given_arguments[i].toLowerCase())) {
+                            return error(i, `Invalid option from list:\n${command_arguments[i].list?.map(argument => '— ' + argument.value.toString()[0].toUpperCase() + argument.value.toString().slice(1)).join('\n')}`);
+                        };
+                    }
                     formatted_args.push(given_arguments[i]);
                     break;
 
                 case "number":
                     if (isNaN(Number(given_arguments[i]))) return error(i);
+                    if (command_arguments[i].list !== undefined) {
+                        if (!command_arguments[i].list?.find(argument => argument.value === given_arguments[i])) {
+                            return error(i, `Invalid option from list:\n${command_arguments[i].list?.map(argument => '— ' + argument.value).join('\n')}`);
+                        };
+                    }
                     formatted_args.push(Number(given_arguments[i]));
                     break;
 
@@ -264,6 +288,18 @@ export default class Petal {
                     if (!channel) return error(i);
 
                     formatted_args.push(channel);
+                    break;
+
+                case "role":
+                    if (!message.mentions.roles) return error(i);
+
+                    let role_id = (/[0-9]{18}/.exec(given_arguments[i]) || [])[0];
+                    if (!role_id) return error(i);
+
+                    let role = message.mentions.roles.find((u: any) => u.id == role_id);
+                    if (!role) return error(i);
+
+                    formatted_args.push(role);
                     break;
 
                 default:
@@ -295,13 +331,16 @@ export default class Petal {
                 options: data.arguments.map(argument => {
 
                     return {
+                        required: argument.required ?? false,
                         name: argument.name.toLowerCase(),
-                        description: argument.description ?? 'No description provided.',
+                        description: argument.description ?? 'No description.',
+                        choices: argument.list ?? [],
                         type: (
-                            argument.type === 'channel' ? "CHANNEL" :
-                                argument.type === 'member' ? "USER" :
-                                    argument.type === 'number' ? "INTEGER" :
-                                        "STRING"
+                            argument.type === 'role' ? "ROLE" :
+                                argument.type === 'channel' ? "CHANNEL" :
+                                    argument.type === 'member' ? "USER" :
+                                        argument.type === 'number' ? "INTEGER" :
+                                            "STRING"
                         )
                     }
 

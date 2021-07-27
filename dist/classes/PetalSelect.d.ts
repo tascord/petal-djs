@@ -1,4 +1,4 @@
-import { GuildMember, MessageSelectMenu, MessageSelectOptionData, User } from "discord.js";
+import { GuildMember, Interaction, MessageSelectMenu, MessageSelectOptionData, User } from "discord.js";
 import { Petal } from "..";
 export default class PetalSelect {
     private raw;
@@ -40,7 +40,7 @@ export default class PetalSelect {
      * @example <PetalSelect>.setHandler(petal, (interaction) => ...);
      * @returns
      */
-    setHandler: (client: Petal, handler: Function) => PetalSelect;
+    setHandler: (client: Petal, handler: (interaction: Interaction) => void) => PetalSelect;
     /**
      * Gets the select menu's raw data
      * @example <PetalSelect>.compile();

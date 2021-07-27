@@ -1,4 +1,4 @@
-import { GuildMember, MessageButton, User } from "discord.js";
+import { GuildMember, Interaction, MessageButton, User } from "discord.js";
 import { Petal } from "..";
 export default class PetalButton {
     private raw;
@@ -66,7 +66,7 @@ export default class PetalButton {
      * @example <PetalButton>.setHandler(petal, (interaction) => interaction.message.delete());
      * @returns
      */
-    setHandler: (client: Petal, handler: Function) => PetalButton;
+    setHandler: (client: Petal, handler: (interaction: Interaction) => void) => PetalButton;
     /**
      * Gets the buttons raw data
      * @example <PetalButton>.compile();

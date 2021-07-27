@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
+import { ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 
@@ -18,10 +18,11 @@ type PetalCommandArguments = {
 
     name: string,
     description?: string,
-    type: 'string' | 'number' | 'member' | 'channel',
+    type: 'string' | 'number' | 'member' | 'channel' | 'role',
     options?: string[],
     message?: string,
     required?: boolean,
+    list?: ApplicationCommandOptionChoice[]
 
 }
 
@@ -48,9 +49,9 @@ export default class PetalCommand {
     /**
      * Petal command constructor
      * @param opts Petal command data
-     * @example new PetalCommand({ })
+     * @example new PetalCommand()
      */
-    constructor(opts: PetalCommandOpts) {
+    constructor(opts: PetalCommandOpts = {}) {
 
         if (!opts) throw new TypeError(`No command opts provided.`);
 
@@ -61,6 +62,12 @@ export default class PetalCommand {
         this.runas = opts.runas ??= [];
         this.alias = opts.alias ??= [];
         this.delete = opts.delete ??= true;
+
+        for(let argument of this.arguments) {
+
+            if(argument.list && (argument.type !== 'string' && argument.type !== 'number')) throw new TypeError(`Cannot have list items and a non string nor numerical value`);
+
+        }
 
     }
 

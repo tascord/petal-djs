@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
+import { ApplicationCommandOptionChoice, CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 declare type PetalCommandOpts = {
@@ -13,10 +13,11 @@ declare type PetalCommandOpts = {
 declare type PetalCommandArguments = {
     name: string;
     description?: string;
-    type: 'string' | 'number' | 'member' | 'channel';
+    type: 'string' | 'number' | 'member' | 'channel' | 'role';
     options?: string[];
     message?: string;
     required?: boolean;
+    list?: ApplicationCommandOptionChoice[];
 };
 declare type PetalCommandRunas = {
     name: string;
@@ -35,9 +36,9 @@ export default class PetalCommand {
     /**
      * Petal command constructor
      * @param opts Petal command data
-     * @example new PetalCommand({ })
+     * @example new PetalCommand()
      */
-    constructor(opts: PetalCommandOpts);
+    constructor(opts?: PetalCommandOpts);
     /**
      * Command run function
      * @param petal Petal instance

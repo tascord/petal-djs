@@ -1,4 +1,4 @@
-import { GuildMember, MessageButton, User } from "discord.js";
+import { GuildMember, Interaction, MessageButton, User } from "discord.js";
 import { Petal } from "..";
 import constants from "../constants";
 
@@ -121,7 +121,7 @@ export default class PetalButton {
      * @example <PetalButton>.setHandler(petal, (interaction) => interaction.message.delete());
      * @returns 
      */
-    setHandler = (client: Petal, handler: Function): PetalButton => {
+    setHandler = (client: Petal, handler: (interaction: Interaction) => void): PetalButton => {
         if (this.raw.custom_id) throw new TypeError(`Handler already declared, custom_id present.`);
         if (this.raw.url) throw new TypeError(`Cannot set handler of link button.`)
         this.raw.custom_id = client.interaction_manager.register_interaction(handler, this.raw.individual || null, this.raw.single || false);

@@ -61,6 +61,7 @@ var Petal = /** @class */ (function () {
     function Petal(opts) {
         var e_1, _a;
         var _this = this;
+        var _b;
         /**
          * Handles incoming commands
          * @param message Discord.JS message
@@ -98,8 +99,9 @@ var Petal = /** @class */ (function () {
             }
             // Format args
             var formatted_args = _this.format_args(args, message, run);
-            if (formatted_args instanceof discord_js_1.MessageEmbed)
-                return message.reply({ embeds: [formatted_args] });
+            if (formatted_args.embeds !== undefined)
+                return message.reply(formatted_args);
+            formatted_args = formatted_args;
             run.run(_this, formatted_args, message, new PetalStorage_1.Store(_this.users, message.author.id), new PetalStorage_1.Store(_this.servers, message.guild.id))
                 .then(function (response) {
                 var enqueue_delete = function (sent_message) {
@@ -145,11 +147,9 @@ var Petal = /** @class */ (function () {
             }
         };
         this.format_args = function (given_arguments, message, command) {
+            var _a, _b, _c, _d;
             var error = function (index, message) {
-                return new discord_js_1.MessageEmbed()
-                    .setColor(0xff006a)
-                    .setTitle("\u274C Invalid arguments provided.")
-                    .setDescription(message || command_arguments[index].message || "Invalid argument type provided.");
+                return _this.error_handler(message || command_arguments[index].message || "Invalid argument type provided.");
             };
             var formatted_args = [];
             var command_arguments = command.arguments;
@@ -160,13 +160,25 @@ var Petal = /** @class */ (function () {
                     return "break";
                 switch (command_arguments[i].type) {
                     case "string":
-                        if (typeof (given_arguments[i]) !== command_arguments[i].type)
+                        if (typeof (given_arguments[i]) !== 'string')
                             return { value: error(i) };
+                        if (command_arguments[i].list !== undefined) {
+                            if (!((_a = command_arguments[i].list) === null || _a === void 0 ? void 0 : _a.find(function (argument) { return argument.value.toString().toLowerCase() === given_arguments[i].toLowerCase(); }))) {
+                                return { value: error(i, "Invalid option from list:\n" + ((_b = command_arguments[i].list) === null || _b === void 0 ? void 0 : _b.map(function (argument) { return '— ' + argument.value.toString()[0].toUpperCase() + argument.value.toString().slice(1); }).join('\n'))) };
+                            }
+                            ;
+                        }
                         formatted_args.push(given_arguments[i]);
                         break;
                     case "number":
                         if (isNaN(Number(given_arguments[i])))
                             return { value: error(i) };
+                        if (command_arguments[i].list !== undefined) {
+                            if (!((_c = command_arguments[i].list) === null || _c === void 0 ? void 0 : _c.find(function (argument) { return argument.value === given_arguments[i]; }))) {
+                                return { value: error(i, "Invalid option from list:\n" + ((_d = command_arguments[i].list) === null || _d === void 0 ? void 0 : _d.map(function (argument) { return '— ' + argument.value; }).join('\n'))) };
+                            }
+                            ;
+                        }
                         formatted_args.push(Number(given_arguments[i]));
                         break;
                     case "member":
@@ -190,6 +202,17 @@ var Petal = /** @class */ (function () {
                         if (!channel)
                             return { value: error(i) };
                         formatted_args.push(channel);
+                        break;
+                    case "role":
+                        if (!message.mentions.roles)
+                            return { value: error(i) };
+                        var role_id_1 = (/[0-9]{18}/.exec(given_arguments[i]) || [])[0];
+                        if (!role_id_1)
+                            return { value: error(i) };
+                        var role = message.mentions.roles.find(function (u) { return u.id == role_id_1; });
+                        if (!role)
+                            return { value: error(i) };
+                        formatted_args.push(role);
                         break;
                     default:
                         throw new TypeError("Invalid type " + command_arguments[i].type + " provided.");
@@ -218,14 +241,17 @@ var Petal = /** @class */ (function () {
                     name: name.toLowerCase(),
                     description: data.description,
                     options: data.arguments.map(function (argument) {
-                        var _a;
+                        var _a, _b, _c;
                         return {
+                            required: (_a = argument.required) !== null && _a !== void 0 ? _a : false,
                             name: argument.name.toLowerCase(),
-                            description: (_a = argument.description) !== null && _a !== void 0 ? _a : 'No description provided.',
-                            type: (argument.type === 'channel' ? "CHANNEL" :
-                                argument.type === 'member' ? "USER" :
-                                    argument.type === 'number' ? "INTEGER" :
-                                        "STRING")
+                            description: (_b = argument.description) !== null && _b !== void 0 ? _b : 'No description.',
+                            choices: (_c = argument.list) !== null && _c !== void 0 ? _c : [],
+                            type: (argument.type === 'role' ? "ROLE" :
+                                argument.type === 'channel' ? "CHANNEL" :
+                                    argument.type === 'member' ? "USER" :
+                                        argument.type === 'number' ? "INTEGER" :
+                                            "STRING")
                         };
                     })
                 };
@@ -257,6 +283,17 @@ var Petal = /** @class */ (function () {
             commands: {},
             services: {}
         };
+        // Error handler
+        this.error_handler = (_b = opts.error_handler) !== null && _b !== void 0 ? _b : (function (message) {
+            return {
+                embeds: [
+                    new discord_js_1.MessageEmbed()
+                        .setColor(0xff006a)
+                        .setTitle("\u274C Invalid arguments provided.")
+                        .setDescription(message)
+                ]
+            };
+        });
         // Load all commands, events & services
         ['commands', 'events', 'services'].forEach(function (sub) {
             var e_2, _a;
@@ -302,15 +339,15 @@ var Petal = /** @class */ (function () {
         var this_1 = this;
         try {
             // Register events
-            for (var _b = __values(Object.entries(this.modules.events)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var _d = __read(_c.value, 2), name_1 = _d[0], event_1 = _d[1];
+            for (var _c = __values(Object.entries(this.modules.events)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var _e = __read(_d.value, 2), name_1 = _e[0], event_1 = _e[1];
                 _loop_1(name_1, event_1);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
             }
             finally { if (e_1) throw e_1.error; }
         }

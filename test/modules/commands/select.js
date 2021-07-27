@@ -4,7 +4,6 @@ const { Store } = require('../../../dist/classes/PetalStorage');
 
 const test = new PetalCommand({});
 
-
 /**
  * Example petal command
  * @param {Petal} petal Petal instance 
@@ -22,6 +21,7 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
      */
     const handler = (interaction) => {
 
+        interaction.deferUpdate();
         console.log('Selected values: ' + interaction.values);
 
     }

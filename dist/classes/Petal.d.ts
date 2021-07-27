@@ -7,6 +7,7 @@ declare type PetalOps = {
     database_location?: string;
     token: string;
     intents: Intents;
+    error_handler?: (error: string) => ReplyMessageOptions;
 };
 export default class Petal {
     client: Client;
@@ -26,6 +27,7 @@ export default class Petal {
     database_location: string | undefined;
     users: table;
     servers: table;
+    error_handler: (error: string) => ReplyMessageOptions;
     /**
      * Petal client constructor
      * @param opts Petal options
@@ -40,7 +42,7 @@ export default class Petal {
      */
     handle_command: (message: Message, prefix: string) => Promise<Message> | undefined;
     format_command_response: (command_name: string, response_data: MessageEmbed | [MessageEmbed, MessageActionRow[]]) => ReplyMessageOptions;
-    format_args: (given_arguments: Array<string>, message: Message, command: PetalCommand) => Array<any> | MessageEmbed;
+    format_args: (given_arguments: Array<string>, message: Message, command: PetalCommand) => Array<any> | ReplyMessageOptions;
     /**
      * Deploys slash commands globally or to a guild if provided
      * @param guild Guild to push to

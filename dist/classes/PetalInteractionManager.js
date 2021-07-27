@@ -63,13 +63,15 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var discord_js_1 = require("discord.js");
 var PetalStorage_1 = require("./PetalStorage");
 var PetalInteractionManager = /** @class */ (function () {
     /**
      * InteractionManager constructor
      */
-    function PetalInteractionManager() {
+    function PetalInteractionManager(opts) {
         var _this = this;
+        if (opts === void 0) { opts = {}; }
         /**
          * Registers an interaction
          * @param handler
@@ -91,10 +93,10 @@ var PetalInteractionManager = /** @class */ (function () {
          * @param interaction Interaction data
          */
         this.handle_interaction = function (interaction, petal) { return __awaiter(_this, void 0, void 0, function () {
-            var command, guild_1, data;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var command, guild_1, compiled_arguments, i, v, type, data;
+            var _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         if (!interaction.isCommand()) return [3 /*break*/, 3];
                         // Defer temporarily
@@ -105,18 +107,16 @@ var PetalInteractionManager = /** @class */ (function () {
                             console.warn("Command '/" + interaction.commandName + "' was run, however the command file doesn't exist.");
                             interaction.deleteReply();
                         }
-                        if (!interaction.guild)
+                        if (!interaction.guildId)
                             return [2 /*return*/];
-                        return [4 /*yield*/, interaction.guild.fetch()];
-                    case 1:
-                        guild_1 = _c.sent();
-                        return [4 /*yield*/, guild_1.members.fetch()
-                            // Handle command
-                        ];
+                        return [4 /*yield*/, petal.client.guilds.fetch()];
+                    case 1: return [4 /*yield*/, (_d.sent())];
                     case 2:
-                        _c.sent();
-                        // Handle command
-                        command.run(petal, command.arguments.map(function (command_argument) {
+                        _d.sent();
+                        guild_1 = petal.client.guilds.cache.get(interaction.guildId);
+                        if (!guild_1)
+                            return [2 /*return*/];
+                        compiled_arguments = command.arguments.map(function (command_argument) {
                             var argument = interaction.options.get(command_argument.name.toLowerCase(), command_argument.required);
                             if (!argument)
                                 return null;
@@ -126,13 +126,29 @@ var PetalInteractionManager = /** @class */ (function () {
                                 return argument.value;
                             if (command_argument.type === 'string')
                                 return argument.value;
+                            if (command_argument.type === 'role')
+                                return argument.role;
                             if (command_argument.type === 'member') {
                                 var user = interaction.user;
                                 if (!user)
                                     return;
                                 return guild_1.members.cache.get(user.id);
                             }
-                        }), interaction, new PetalStorage_1.Store(petal.users, interaction.user.id), new PetalStorage_1.Store(petal.servers, ((_b = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : 'NULL').toString()))
+                        });
+                        for (i = 0; i < compiled_arguments.length; i++) {
+                            v = compiled_arguments[i];
+                            type = (v instanceof discord_js_1.Channel) ? 'channel' :
+                                (v instanceof discord_js_1.Role) ? 'role' :
+                                    (v instanceof discord_js_1.GuildMember) ? 'member' :
+                                        (typeof (v) === 'number') ? 'number' :
+                                            'string';
+                            if (command.arguments[i].type !== type) {
+                                console.log(v, "Invalid argument. Required type: " + command.arguments[i].type + ". Received type: " + type);
+                                return [2 /*return*/, interaction.followUp(petal.error_handler((_a = command.arguments[i].message) !== null && _a !== void 0 ? _a : "Invalid argument type provided."))];
+                            }
+                        }
+                        // Handle command
+                        command.run(petal, compiled_arguments, interaction, new PetalStorage_1.Store(petal.users, interaction.user.id), new PetalStorage_1.Store(petal.servers, ((_c = (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : 'NULL').toString()))
                             .then(function (response) {
                             if (response === null)
                                 return interaction.deleteReply();
@@ -157,7 +173,7 @@ var PetalInteractionManager = /** @class */ (function () {
                             if (data.single)
                                 delete this.interactions[interaction.customId];
                         }
-                        _c.label = 4;
+                        _d.label = 4;
                     case 4: return [2 /*return*/];
                 }
             });
@@ -178,22 +194,23 @@ var PetalInteractionManager = /** @class */ (function () {
         this.interactions = {};
         setInterval(function () {
             var e_1, _a;
+            var _b;
             try {
-                for (var _b = __values(Object.entries(_this.interactions)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+                for (var _c = __values(Object.entries(_this.interactions)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                    var _e = __read(_d.value, 2), key = _e[0], value = _e[1];
                     var registered = value.registered;
                     if (!registered) {
                         console.warn("No registered time for " + key + ".");
                         continue;
                     }
-                    if (Date.now() - registered > (5 * 60 * 1000))
+                    if (Date.now() - registered > ((_b = opts.cache_time) !== null && _b !== void 0 ? _b : 5 * 60 * 1000))
                         delete _this.interactions[key];
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                    if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
                 }
                 finally { if (e_1) throw e_1.error; }
             }

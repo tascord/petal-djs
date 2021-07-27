@@ -1,4 +1,4 @@
-import { GuildMember, MessageSelectMenu, MessageSelectOptionData, User } from "discord.js";
+import { GuildMember, Interaction, MessageSelectMenu, MessageSelectOptionData, User } from "discord.js";
 import { Petal } from "..";
 
 type PetalRawButton = {
@@ -76,7 +76,7 @@ export default class PetalSelect {
      * @example <PetalSelect>.setHandler(petal, (interaction) => ...);
      * @returns 
      */
-    setHandler = (client: Petal, handler: Function): PetalSelect => {
+    setHandler = (client: Petal, handler: (interaction: Interaction) => void): PetalSelect => {
         if (this.raw.custom_id) throw new TypeError(`Handler already declared, custom_id present.`);
         this.raw.custom_id = client.interaction_manager.register_interaction(handler, this.raw.individual || null, false);
         return this;

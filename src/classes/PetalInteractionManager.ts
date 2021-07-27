@@ -1,23 +1,29 @@
-import { CommandInteraction, Interaction, MessageComponentInteraction, SelectMenuInteraction } from "discord.js";
+import { Channel, GuildMember, Interaction, Role } from "discord.js";
 import Petal from "./Petal";
 import { PetalCommandResponseData } from "./PetalCommand";
 import { Store } from "./PetalStorage";
 
 type PetalInteractionData = {
-    handler: Function,
+    handler: (interaction: Interaction) => void,
     linked_user: string | null,
     single: boolean,
-    custom_id: string
+    registered: number
+}
+
+type PetalInteractionManagerOpts = {
+
+    cache_time?: number
+
 }
 
 export default class PetalInteractionManager {
 
-    interactions: { [key: string]: PetalInteractionData } | {};
+    interactions: { [key: string]: PetalInteractionData };
 
     /**
      * InteractionManager constructor
      */
-    constructor() {
+    constructor(opts: PetalInteractionManagerOpts = {}) {
         this.interactions = {};
         setInterval(() => {
 
@@ -30,7 +36,7 @@ export default class PetalInteractionManager {
                     continue;
                 }
 
-                if (Date.now() - registered > (5 * 60 * 1000)) delete (this.interactions as any)[key];
+                if (Date.now() - registered > (opts.cache_time ?? 5 * 60 * 1000)) delete (this.interactions as any)[key];
 
             }
 
@@ -43,10 +49,10 @@ export default class PetalInteractionManager {
      * @param custom_id 
      * @returns 
      */
-    register_interaction = (handler: Function, linked_user: string | null, single: boolean, custom_id?: string): string => {
+    register_interaction = (handler: (interaction: Interaction) => void, linked_user: string | null, single: boolean, custom_id?: string): string => {
 
         let id = custom_id || this.generate_token();
-        (this.interactions as any)[id] = {
+        this.interactions[id] = {
             handler,
             linked_user,
             single: single,
@@ -78,33 +84,58 @@ export default class PetalInteractionManager {
                 interaction.deleteReply();
             }
 
-            if (!interaction.guild) return;
-            const guild = await interaction.guild.fetch();
-            await guild.members.fetch()
+            if (!interaction.guildId) return;
+            await (await petal.client.guilds.fetch());
+
+            const guild = petal.client.guilds.cache.get(interaction.guildId);
+            if (!guild) return;
+
+            // Arguments 
+            const compiled_arguments = command.arguments.map(command_argument => {
+
+                const argument = interaction.options.get(command_argument.name.toLowerCase(), command_argument.required);
+                if (!argument) return null;
+
+                if (command_argument.type === 'channel') return argument.channel;
+                if (command_argument.type === 'number') return argument.value;
+                if (command_argument.type === 'string') return argument.value;
+                if (command_argument.type === 'role') return argument.role;
+                if (command_argument.type === 'member') {
+
+                    const user = interaction.user;
+                    if (!user) return;
+
+                    return guild.members.cache.get(user.id);
+
+                }
+
+            })
+
+            for (let i = 0; i < compiled_arguments.length; i++) {
+
+                let v = compiled_arguments[i];
+
+                const type =
+                    (v instanceof Channel) ? 'channel' :
+                        (v instanceof Role) ? 'role' :
+                            (v instanceof GuildMember) ? 'member' :
+                                (typeof (v) === 'number') ? 'number' :
+                                    'string';
+
+
+                if (command.arguments[i].type !== type) {
+
+                    console.log(v, `Invalid argument. Required type: ${command.arguments[i].type}. Received type: ${type}`,)
+                    return interaction.followUp(petal.error_handler(command.arguments[i].message ?? `Invalid argument type provided.`));
+
+                }
+
+            }
 
             // Handle command
             command.run(
                 petal,
-                command.arguments.map(command_argument => {
-
-                    const argument = interaction.options.get(command_argument.name.toLowerCase(), command_argument.required);
-                    if (!argument) return null;
-
-                    if (command_argument.type === 'channel') return argument.channel;
-                    if (command_argument.type === 'number') return argument.value;
-                    if (command_argument.type === 'string') return argument.value;
-
-                    if (command_argument.type === 'member') {
-
-                        const user = interaction.user;
-                        if (!user) return;
-
-                        return guild.members.cache.get(user.id);
-
-                    }
-
-
-                }),
+                compiled_arguments,
                 interaction,
                 new Store(petal.users, interaction.user.id),
                 new Store(petal.servers, (interaction.guild?.id ?? 'NULL').toString())
