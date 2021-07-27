@@ -100,14 +100,7 @@ export default class PetalInteractionManager {
                 if (command_argument.type === 'number') return argument.value;
                 if (command_argument.type === 'string') return argument.value;
                 if (command_argument.type === 'role') return argument.role;
-                if (command_argument.type === 'member') {
-
-                    const user = interaction.user;
-                    if (!user) return;
-
-                    return guild.members.cache.get(user.id);
-
-                }
+                if (command_argument.type === 'member') return argument.member;
 
             })
 

@@ -93,7 +93,7 @@ var PetalInteractionManager = /** @class */ (function () {
          * @param interaction Interaction data
          */
         this.handle_interaction = function (interaction, petal) { return __awaiter(_this, void 0, void 0, function () {
-            var command, guild_1, compiled_arguments, i, v, type, data;
+            var command, guild, compiled_arguments, i, v, type, data;
             var _a, _b, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
@@ -113,8 +113,8 @@ var PetalInteractionManager = /** @class */ (function () {
                     case 1: return [4 /*yield*/, (_d.sent())];
                     case 2:
                         _d.sent();
-                        guild_1 = petal.client.guilds.cache.get(interaction.guildId);
-                        if (!guild_1)
+                        guild = petal.client.guilds.cache.get(interaction.guildId);
+                        if (!guild)
                             return [2 /*return*/];
                         compiled_arguments = command.arguments.map(function (command_argument) {
                             var argument = interaction.options.get(command_argument.name.toLowerCase(), command_argument.required);
@@ -128,12 +128,8 @@ var PetalInteractionManager = /** @class */ (function () {
                                 return argument.value;
                             if (command_argument.type === 'role')
                                 return argument.role;
-                            if (command_argument.type === 'member') {
-                                var user = interaction.user;
-                                if (!user)
-                                    return;
-                                return guild_1.members.cache.get(user.id);
-                            }
+                            if (command_argument.type === 'member')
+                                return argument.member;
                         });
                         for (i = 0; i < compiled_arguments.length; i++) {
                             v = compiled_arguments[i];
