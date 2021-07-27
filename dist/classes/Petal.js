@@ -149,7 +149,7 @@ var Petal = /** @class */ (function () {
         this.format_args = function (given_arguments, message, command) {
             var _a, _b, _c, _d;
             var error = function (index, message) {
-                return _this.error_handler(message || command_arguments[index].message || "Invalid argument type provided.");
+                return _this.error_handler(_this, message || command_arguments[index].message || "Invalid argument type provided.");
             };
             var formatted_args = [];
             var command_arguments = command.arguments;
@@ -284,7 +284,7 @@ var Petal = /** @class */ (function () {
             services: {}
         };
         // Error handler
-        this.error_handler = (_b = opts.error_handler) !== null && _b !== void 0 ? _b : (function (message) {
+        this.error_handler = (_b = opts.error_handler) !== null && _b !== void 0 ? _b : (function (_, message) {
             return {
                 embeds: [
                     new discord_js_1.MessageEmbed()

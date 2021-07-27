@@ -119,7 +119,7 @@ export default class PetalInteractionManager {
                 if (command.arguments[i].type !== type) {
 
                     if (!(v === null && !command.arguments[i].required))
-                        return interaction.followUp(petal.error_handler(command.arguments[i].message ?? `Invalid argument type provided.`));
+                        return interaction.followUp(petal.error_handler(petal, command.arguments[i].message ?? `Invalid argument type provided.`));
 
                 }
 

@@ -7,7 +7,7 @@ declare type PetalOps = {
     database_location?: string;
     token: string;
     intents: Intents;
-    error_handler?: (error: string) => ReplyMessageOptions;
+    error_handler?: (petal: Petal, error: string) => ReplyMessageOptions;
 };
 export default class Petal {
     client: Client;
@@ -27,7 +27,7 @@ export default class Petal {
     database_location: string | undefined;
     users: table;
     servers: table;
-    error_handler: (error: string) => ReplyMessageOptions;
+    error_handler: (petal: Petal, error: string) => ReplyMessageOptions;
     /**
      * Petal client constructor
      * @param opts Petal options
