@@ -143,8 +143,8 @@ var PetalInteractionManager = /** @class */ (function () {
                                         (typeof (v) === 'number') ? 'number' :
                                             'string';
                             if (command.arguments[i].type !== type) {
-                                console.log(v, "Invalid argument. Required type: " + command.arguments[i].type + ". Received type: " + type);
-                                return [2 /*return*/, interaction.followUp(petal.error_handler((_a = command.arguments[i].message) !== null && _a !== void 0 ? _a : "Invalid argument type provided."))];
+                                if (!(v === null && !command.arguments[i].required))
+                                    return [2 /*return*/, interaction.followUp(petal.error_handler((_a = command.arguments[i].message) !== null && _a !== void 0 ? _a : "Invalid argument type provided."))];
                             }
                         }
                         // Handle command

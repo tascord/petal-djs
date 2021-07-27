@@ -125,8 +125,8 @@ export default class PetalInteractionManager {
 
                 if (command.arguments[i].type !== type) {
 
-                    console.log(v, `Invalid argument. Required type: ${command.arguments[i].type}. Received type: ${type}`,)
-                    return interaction.followUp(petal.error_handler(command.arguments[i].message ?? `Invalid argument type provided.`));
+                    if (!(v === null && !command.arguments[i].required))
+                        return interaction.followUp(petal.error_handler(command.arguments[i].message ?? `Invalid argument type provided.`));
 
                 }
 
