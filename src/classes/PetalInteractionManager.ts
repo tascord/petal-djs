@@ -73,7 +73,7 @@ export default class PetalInteractionManager {
         if (interaction.isCommand()) {
 
             // Defer temporarily
-            interaction.defer();
+            interaction.deferReply();
 
             // Get corresponding command
             const command = petal.modules.commands[interaction.commandName];
@@ -85,7 +85,7 @@ export default class PetalInteractionManager {
             }
 
             if (!interaction.guildId) return;
-            await (await petal.client.guilds.fetch());
+            await petal.client.guilds.fetch();
 
             const guild = petal.client.guilds.cache.get(interaction.guildId);
             if (!guild) return;

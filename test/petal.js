@@ -25,7 +25,7 @@ const custom_error_handler = (petal, message) => {
 }
 
 new Petal({
-    token: '-- bot token here --',
+    token: '',
     module_location: require('path').join(__dirname, 'modules'),
     database_location: require('path').join(__dirname, 'petal.sqlite'),
     error_handler: custom_error_handler,

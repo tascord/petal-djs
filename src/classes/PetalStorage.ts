@@ -1,26 +1,25 @@
 import { join } from 'path';
-import { table } from 'quick.db';
-const quick = require('quick.db');
+import Hasty, { Hastyable } from 'hasty.db';
 
 /**
- * Get quick.db database
+ * Get hasty.db database
  * @param table_name Table name 
  * @param database_location Database location
  * @returns 
  */
-export const get_database = (table_name: string, database_location: string = join('./', 'petal.sqlite')): table => {
+export const get_database = (table_name: string, database_location: string = join('./', 'petal.sqlite')): Hastyable => {
 
-    const base = quick(database_location);
-    return new base.table(table_name);
+    const base = Hasty(database_location);
+    return new base.Table(table_name);
 
 }
 
 /**
  * Gets all stores from a database
- * @param database Quick.db table
+ * @param database hasty.db table
  * @returns
  */
-export const get_all_database_values = (database: table): { [key: string]: any } => {
+export const get_all_database_values = (database: Hastyable): { [key: string]: any } => {
 
     return database.all().map(raw => database.get(raw.ID));
 
@@ -28,16 +27,16 @@ export const get_all_database_values = (database: table): { [key: string]: any }
 
 export class Store {
 
-    database: table;
+    database: Hastyable;
     id: string;
 
     /**
      * PetalStorage constructor
-     * @param database Quick.db table or table name
+     * @param database hasty.db table or table name
      * @param database_location Database location
      * @param id Table row ID 
      */
-    constructor(database: table | string, id: string, database_location = join('./', 'petal.sqlite')) {
+    constructor(database: Hastyable | string, id: string, database_location = join('./', 'petal.sqlite')) {
 
         if (typeof(database) === 'string') this.database = get_database(database, database_location);
         else this.database = database;

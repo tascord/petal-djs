@@ -4,7 +4,11 @@ import PetalButton from './classes/PetalButton';
 import PetalSelect from './classes/PetalSelect';
 
 import PetalCommand, { PetalCommandResponse } from './classes/PetalCommand';
-import { Store } from "./classes/PetalStorage";
+import { Store, get_all_database_values, get_database } from './classes/PetalStorage';
+
+const PetalStorage = {
+    Store, get_all_database_values, get_database
+}
 
 export {
 
@@ -14,6 +18,6 @@ export {
     PetalCommandResponse,
     PetalButton,
     PetalSelect,
-    Store
+    PetalStorage,
 
 }

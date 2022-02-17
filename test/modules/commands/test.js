@@ -6,7 +6,7 @@ const test = new PetalCommand({
     arguments: [
         {
             name: 'Member',
-            type: 'member',
+            type: 'string',
             message: 'Please provide a valid member',
             required: false
         }
@@ -32,10 +32,10 @@ test.run = (petal, args, message, user, server) => new Promise((resolve, reject)
         const member = args[0];
 
         // Should never be needed
-        if ((!member instanceof GuildMember)) throw new Error("Member not required type.");
+        // if ((!member instanceof GuildMember)) throw new Error("Member not required type.");
 
         // Log data
-        console.log(`User provided: ${member.user.username}.`);
+        // console.log(`User provided: ${member.user.username}.`);
 
     }
 

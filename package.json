@@ -1,6 +1,6 @@
 {
   "name": "djs-petal",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "Petal — A discord.js framework!",
   "main": "dist/index.js",
   "directories": {
@@ -9,15 +9,18 @@
   "scripts": {
     "test": "node test/petal",
     "develop": "tsc-watch --project . --onSuccess \"nodemon test/petal.js\"",
-    "docs": " --out docs"
+    "build": "tsc --project ."
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord.js"
+  ],
   "author": "tascord",
   "license": "ISC",
   "dependencies": {
     "discord-api-types": "^0.18.1",
     "discord.js": "^13.0.0-dev.1ac9a2eb5bfef6d009de7c54d3fac5e3d4a5afdc",
-    "quick.db": "github:lorencerri/quick.db"
+    "hasty.db": "^1.1.6"
   },
   "devDependencies": {
     "@types/node": "^15.6.1",
