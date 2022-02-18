@@ -223,7 +223,7 @@ export default class Petal {
             return ({
                 components: action_rows,
                 embeds: [embed],
-                attachments
+                files: attachments
             })
 
         }
