@@ -1,0 +1,4 @@
+node_modules/
+*.sqlite
+test/petal.js
+dist/
