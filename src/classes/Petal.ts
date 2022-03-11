@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Client, Guild, Intents, Interaction, Message, MessageActionRow, MessageAttachment, MessageEmbed, ReplyMessageOptions } from "discord.js";
+import { ApplicationCommandData, Client, Guild, Intents, Interaction, Message, MessageActionRow, MessageAttachment, MessageEmbed, PartialTypes, ReplyMessageOptions } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { join } from "path";
 import { PetalCommand, PetalEvent } from "..";
@@ -13,6 +13,7 @@ type PetalOps = {
     token: string,
     intents: Intents,
     error_handler?: (petal: Petal, error: string) => ReplyMessageOptions;
+    partials?: PartialTypes[];
 }
 
 export default class Petal {
@@ -46,7 +47,8 @@ export default class Petal {
 
         // Create client
         this.client = new Client({
-            intents: opts.intents
+            intents: opts.intents,
+            partials: opts.partials ?? []
         })
 
         // Get absolute location
