@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Client, Guild, Intents, Interaction, Message, MessageActionRow, MessageEmbed, PartialTypes, ReplyMessageOptions } from "discord.js";
+import { ApplicationCommandData, Client, Guild, Intents, Interaction, Message, MessageActionRow, MessageAttachment, MessageEmbed, ReplyMessageOptions } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import { join } from "path";
 import { PetalCommand, PetalEvent } from "..";
@@ -13,7 +13,6 @@ type PetalOps = {
     token: string,
     intents: Intents,
     error_handler?: (petal: Petal, error: string) => ReplyMessageOptions;
-    partials: PartialTypes[]
 }
 
 export default class Petal {
@@ -47,8 +46,7 @@ export default class Petal {
 
         // Create client
         this.client = new Client({
-            intents: opts.intents,
-            partials: opts.partials ?? []
+            intents: opts.intents
         })
 
         // Get absolute location
@@ -196,7 +194,7 @@ export default class Petal {
 
     }
 
-    format_command_response = (command_name: string, response_data: MessageEmbed | [MessageEmbed, MessageActionRow[]]): ReplyMessageOptions => {
+    format_command_response = (command_name: string, response_data: NonNullable<PetalCommandResponseData>): ReplyMessageOptions => {
 
         let response = response_data;
 
@@ -207,23 +205,25 @@ export default class Petal {
         else {
 
             // Convert type
-            response = (response as [MessageEmbed, MessageActionRow[]]);
+            response = (response as [MessageEmbed, MessageActionRow[]] | [MessageEmbed, MessageActionRow[], MessageAttachment[]]);
 
             // Get embed
             let embed = response.shift();
             if (!(embed instanceof MessageEmbed)) throw new TypeError(`${command_name} returned an invalid value. Mixed Embed/ActionRow returns must begin with an embed`);
 
-            // TODO: Cleanup hacky solution
-            let action_rows = (response as unknown as [MessageActionRow[]]).shift();
-            if (!action_rows) throw new TypeError(`Mixed Embed/ActionRow given but no action row was present.`);
-
-            // Ensure type
+            // Get actions
+            let action_rows = response.shift() as MessageActionRow[];
             if (action_rows.find(a => !(a instanceof MessageActionRow))) throw new TypeError(`Action row value provided not instance of action row`);
+
+            // Get attachments
+            let attachments = (response.shift() ?? []) as MessageAttachment[];
+            if (attachments.find(a => !(a instanceof MessageAttachment))) throw new TypeError(`Attachment value provided not instance of attachment`);
 
             // Send message
             return ({
                 components: action_rows,
-                embeds: [embed]
+                embeds: [embed],
+                files: attachments
             })
 
         }
@@ -324,7 +324,8 @@ export default class Petal {
      */
     deploy_commands = (guild?: Guild) => {
 
-        const command_data: ApplicationCommandData[] = Object.entries(this.modules.commands).map((command) => {
+        // TODO: Typedef
+        const command_data: any[] = Object.entries(this.modules.commands).map((command) => {
 
             const [name, data] = command;
             return {

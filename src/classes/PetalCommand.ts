@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, MessageActionRow, MessageEmbed } from 'discord.js';
+import { ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, MessageActionRow, MessageAttachment, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 
@@ -34,7 +34,7 @@ type PetalCommandRunas = {
 }
 
 export type PetalCommandResponse = Promise<PetalCommandResponseData>;
-export type PetalCommandResponseData = MessageEmbed | [MessageEmbed, Array<MessageActionRow>] | null;
+export type PetalCommandResponseData = MessageEmbed | [MessageEmbed, Array<MessageActionRow>] | [MessageEmbed, Array<MessageActionRow>, MessageAttachment[]] |  null;
 
 export default class PetalCommand {
 

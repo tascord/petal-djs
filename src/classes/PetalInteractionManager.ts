@@ -73,7 +73,7 @@ export default class PetalInteractionManager {
         if (interaction.isCommand()) {
 
             // Defer temporarily
-            interaction.defer();``
+            interaction.deferReply();
 
             // Get corresponding command
             const command = petal.modules.commands[interaction.commandName];

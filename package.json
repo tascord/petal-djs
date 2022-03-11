@@ -1,6 +1,6 @@
 {
   "name": "djs-petal",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "description": "Petal — A discord.js framework!",
   "main": "dist/index.js",
   "directories": {
@@ -9,9 +9,12 @@
   "scripts": {
     "test": "node test/petal",
     "develop": "tsc-watch --project . --onSuccess \"nodemon test/petal.js\"",
-    "docs": " --out docs"
+    "build": "tsc --project ."
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord.js"
+  ],
   "author": "tascord",
   "license": "ISC",
   "dependencies": {

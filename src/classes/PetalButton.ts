@@ -1,6 +1,5 @@
 import { GuildMember, Interaction, MessageButton, User } from "discord.js";
 import { Petal } from "..";
-import constants from "../constants";
 
 type PetalRawButton = {
     type: number,
@@ -58,7 +57,7 @@ export default class PetalButton {
      * @returns
      */
     setEmoji = (emoji: string): PetalButton => {
-        if (!constants.emoji_regex.test(emoji)) throw new TypeError('Invalid emoji. Fails RGI Regex');
+        // I hope
         this.raw.emoji = emoji;
         return this;
     }
