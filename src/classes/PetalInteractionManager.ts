@@ -1,4 +1,4 @@
-import { Channel, GuildMember, Interaction, Role } from "discord.js";
+import { Channel, GuildMember, Interaction, InteractionReplyOptions, Role } from "discord.js";
 import Petal from "./Petal";
 import { PetalCommandResponseData } from "./PetalCommand";
 import { Store } from "./PetalStorage";
@@ -67,13 +67,13 @@ export default class PetalInteractionManager {
      * Handles an interaction
      * @param interaction Interaction data
      */
-    handle_interaction = async (interaction: Interaction, petal: Petal) => {
+    handle_interaction = async (interaction: Interaction, petal: Petal): Promise<void> => {
 
         // Slash Commands
         if (interaction.isCommand()) {
 
             // Defer temporarily
-            interaction.deferReply();
+            await interaction.deferReply();
 
             // Get corresponding command
             const command = petal.modules.commands[interaction.commandName];
@@ -81,7 +81,7 @@ export default class PetalInteractionManager {
             // Warn on no handler
             if (!command) {
                 console.warn(`Command '/${interaction.commandName}' was run, however the command file doesn't exist.`);
-                interaction.deleteReply();
+                return interaction.deleteReply();
             }
 
             if (!interaction.guildId) return;
@@ -120,7 +120,8 @@ export default class PetalInteractionManager {
 
                     if (!(v === null && !command.arguments[i].required)) {
                         const data = petal.error_handler(petal, command.arguments[i].message ?? `Invalid argument type provided.`);
-                        return interaction.followUp({ embeds: data.embeds, components: data.components });
+                        interaction.followUp(data as InteractionReplyOptions);
+                        return;
                     }
 
                 }
@@ -133,15 +134,15 @@ export default class PetalInteractionManager {
                 compiled_arguments,
                 interaction,
                 new Store(petal.users, interaction.user.id),
-                new Store(petal.servers, (interaction.guild?.id ?? 'NULL').toString())
+                new Store(petal.servers, (interaction.guild!.id).toString())
             )
 
                 .then((response: PetalCommandResponseData) => {
 
                     if (response === null) return interaction.deleteReply();
                     const message_data = petal.format_command_response(interaction.commandName, response);
-
-                    interaction.reply({ embeds: message_data.embeds, components: message_data.components });
+                    interaction.followUp(message_data as InteractionReplyOptions);
+                    return;
 
                 })
 
@@ -150,20 +151,20 @@ export default class PetalInteractionManager {
         // Message Buttons / Select Menu's
         else if (interaction.isButton() || interaction.isSelectMenu()) {
 
-            if (!(interaction as any).customId) {
+            if (!interaction.customId) {
 
                 // Handle action if un-registered
-                if ((interaction as any).deferUpdate) (interaction as any).deferUpdate();
+                await interaction.reply(petal.error_handler(petal, `Not sure what to do with this interaction.`) as InteractionReplyOptions);
 
             };
 
-            let data = ((this.interactions as any)[(interaction as any).customId] as PetalInteractionData | null);
+            let data = (this.interactions[interaction.customId] as PetalInteractionData | null);
 
-            if (!data) return (interaction as any).deferUpdate();
-            if (data.linked_user ? data.linked_user != interaction.user.id : false) return (interaction as any).deferUpdate();
+            if (!data) return interaction.deferUpdate();
+            if (data.linked_user ? data.linked_user != interaction.user.id : false) return interaction.deferUpdate();
 
             data.handler(interaction);
-            if (data.single) delete (this.interactions as any)[(interaction as any).customId];
+            if (data.single) delete this.interactions[interaction.customId];
 
 
         }

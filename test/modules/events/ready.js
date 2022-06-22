@@ -13,7 +13,7 @@ ready.run = (petal) => {
     // Deploy to test server
     petal.client.guilds.fetch('920506765500645426')
         .then(guild => {
-
+            console.log(`Deploying slash commands to '${guild.name}'`)
             petal.deploy_commands(guild);
 
         });
