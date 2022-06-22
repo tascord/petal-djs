@@ -118,8 +118,10 @@ export default class PetalInteractionManager {
 
                 if (command.arguments[i].type !== type) {
 
-                    if (!(v === null && !command.arguments[i].required))
-                        return interaction.followUp(petal.error_handler(petal, command.arguments[i].message ?? `Invalid argument type provided.`));
+                    if (!(v === null && !command.arguments[i].required)) {
+                        const data = petal.error_handler(petal, command.arguments[i].message ?? `Invalid argument type provided.`);
+                        return interaction.followUp({ embeds: data.embeds, components: data.components });
+                    }
 
                 }
 
@@ -139,7 +141,7 @@ export default class PetalInteractionManager {
                     if (response === null) return interaction.deleteReply();
                     const message_data = petal.format_command_response(interaction.commandName, response);
 
-                    interaction.followUp(message_data);
+                    interaction.reply({ embeds: message_data.embeds, components: message_data.components });
 
                 })
 

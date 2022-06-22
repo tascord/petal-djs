@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, MessageActionRow, MessageAttachment, MessageEmbed } from 'discord.js';
+import {  ApplicationCommandOptionChoiceData, CommandInteraction, Message, MessageActionRow, MessageAttachment, MessageEmbed } from 'discord.js';
 import { Petal } from '..';
 import { Store } from "./PetalStorage";
 
@@ -22,7 +22,7 @@ type PetalCommandArguments = {
     options?: string[],
     message?: string,
     required?: boolean,
-    list?: ApplicationCommandOptionChoice[]
+    list?: ApplicationCommandOptionChoiceData[]
 
 }
 
